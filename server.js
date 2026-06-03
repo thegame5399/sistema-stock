@@ -2,7 +2,7 @@ const http = require('http');
 const fs = require('fs');
 const { MongoClient } = require('mongodb');
 
-const url = process.env.MONGO_URI:
+const url = process.env.MONGO_URI
 const dbName = 'ferre';
 const client = new MongoClient(url);
 
