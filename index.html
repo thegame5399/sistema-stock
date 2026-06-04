@@ -517,7 +517,7 @@
                                 <label>Nombre del Vendedor</label>
                                 <input type="text" id="vend-nombre" required placeholder="Ej: Marcos">
                             </div>
-                            <button type="submit" style="background-color: #9b59b6;">Agregar Vendedor</button>
+                            <button id="btnRegistrar" type="submit" style="background-color: #9b59b6;">Agregar Vendedor</button>
                         </form>
                         <ul id="lista-vendedores-ui" class="vendedores-lista"></ul>
                     </div>
@@ -526,8 +526,8 @@
                         <h2>Comprar / Registrar Producto</h2>
                         <form id="form-producto">
                             <div class="form-group"><label>ID Unico</label><input type="number" id="prod-id" required></div>
-                            <div class="form-group"><label>Nombre</label><input type="text" id="prod-nombre" required></div>
-                            <div class="form-group"><label>Precio de Venta ($)</label><input type="number" id="prod-precio" step="0.01" required></div>
+                            <div class="form-group"><label>Nombre</label><input type="text" nombre required></div>
+                            <div class="form-group"><label>Precio de Venta ($)</label><input type="number" "id="prod-precio" step="0.01" required></div>
                             <div class="form-group"><label>Costo de Compra ($)</label><input type="number" id="prod-costo" step="0.01" required></div>
                             <div class="form-group"><label>Cantidad Inicial</label><input type="number" id="prod-cantidad" required></div>
                             <button type="submit">Registrar Stock</button>
@@ -821,7 +821,27 @@
                 this.actualizarInterfaz();
             }
 
-            sumarUnidadStock(idProducto) {
+            async sumarUnidadStock(idProducto) {
+                try{
+                   const res = await fetch(API + '/productos/sumar/', {   
+                method: 'POST',
+                headers:{
+                'Content-Type':
+'application/json'},
+boy:JSON.stringify8{
+id: idProducto,
+cantidad: 1
+})
+});
+if (!res.ok){
+alert('Error al actualizar stock');
+return;}
+await cargarProductos();
+} catch (err){
+console.error(err);
+alert('error de conexion');
+}
+}
                 let producto = this.inventario.find(p => p.id === idProducto);
                 if (producto) {
                     producto.stock += 1;
@@ -1234,10 +1254,6 @@
 
         const miTienda = new Tienda();
 
-        // Datos Iniciales
-        miTienda.comprarProducto(102, "Mouse Optico", 15, 7, 20);
-        miTienda.comprarProducto(101, "Laptop Escolar", 450, 300, 5);
-
         // Registro ficticio para simular un mes anterior en el año vigente
         let fechaPasadaPrueba = new Date();
         fechaPasadaPrueba.setMonth(fechaPasadaPrueba.getMonth() - 1);
@@ -1273,5 +1289,70 @@
 
         miTienda.actualizarInterfaz();
     </script>
+const API = 'https://github.com/thegame5399/sistema-stock'; // 
+document.getElementByid('form-producto').onsubmit = async (e) => {e.preventDefault();B
+
+// CARGAR PRODUCTOS AL INICIAR
+async function cargarProductos() {
+  const res = await fetch(API + '/productos');
+  const productos = await res.json();
+  const contenedor = document.getElementById('inventario');
+  contenedor.innerHTML = '';
+  
+  productos.forEach(p => {
+    contenedor.innerHTML += `
+      <div class="producto">
+        <b>ID: ${p.ID} | ${p.Nombre}</b><br>
+        $${p.Precio}<br>
+        Stock: ${p.Stock} u.
+        <button onclick="vender('${p.ID}')">Vender 1</button>
+        <button onclick="sumarStock('${p.ID}')">+1</button>
+      </div>
+    `;
+  });
+}
+
+// REGISTRAR PRODUCTO
+document.getElementById('btnRegistrar').onclick = async () => {
+  const producto = {
+    ID: document.getElementById('idUnico').value,
+    Nombre: document.getElementById('nombre').value,
+    Precio: parseFloat(document.getElementById('precio').value),
+    Costo: parseFloat(document.getElementById('costo').value),
+    Stock: parseInt(document.getElementById('cantidad').value)
+  };
+  
+  await fetch(API + '/productos', {
+    method: 'POST',
+    headers: {'Content-Type': 'application/json'},
+    body: JSON.stringify(producto)
+  });
+  
+  cargarProductos(); // Recargar lista
+  alert('Producto guardado en MongoDB');
+};
+
+// VENDER 1
+async function vender(id) {
+  await fetch(API + '/ventas', {
+    method: 'POST',
+    headers: {'Content-Type': 'application/json'},
+    body: JSON.stringify({productoID: id, cantidad: 1, vendedor: 'General'})
+  });
+  cargarProductos();
+}
+
+// SUMAR STOCK +1
+async function sumarStock(id) {
+  await fetch(API + '/productos/sumar', {
+    method: 'POST',
+    headers: {'Content-Type': 'application/json'},
+    body: JSON.stringify({id, cantidad: 1})
+  });
+  cargarProductos();
+}
+
+cargarProductos(); // Cargar al abrir la página
+</script>
 </body>
 </html>
