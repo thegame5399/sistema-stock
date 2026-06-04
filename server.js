@@ -32,14 +32,24 @@ const collection = db.collection('mensaje');
         req.on('data', chunk => {
               body += chunk;
          });
+        
          req.on('end', async() => {
+         try{
          const producto = JSON.parse(body);
         await
   db.collection('productos').insertOne(producto);
   res.writeHead(200,{'Content-Type': 'application/json'});
 res.end(JSON.stringify({ ok:true}));
-}catch(err) {console.error(err);}});}
-
+}catch(err) {
+console.error(err);
+res.writeHead(500,  {
+'Content-Type': 'application/json'
+});
+res.end(JSON.strigify({
+ ok:false,
+ error: err.message}));
+}
+});}
 else if(req.url ==='/productos'&& req.method === 'GET') {
 
 const productos = await db
@@ -52,6 +62,7 @@ const productos = await db
        res.end(JSON.stringify(productos));}
     else if(req.url === '/productos/sumar' && req.method === 'POST') {
   let body ='';
+req.on('data?, chunk =>{ body +=chunk;});
   req.on('end', async() => {
       const datos = JSON.parse(body);
 
@@ -85,7 +96,7 @@ res.end('ok');});
   });
 const PORT = process.env.PORT || 3000;
   server.listen(PORT, () => {
-    console.log('Servidor iniciado en http://localhost:${PORT}');
+    console.log(`Servidor iniciado en http://localhost:${PORT}`);
   });
 }
 
