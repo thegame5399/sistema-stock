@@ -10,7 +10,7 @@ async function main() {
  try {
 await client.connect();
 console.log ('conectando a MongoDB atlas');
-const db = client.db (dbname);
+const db = client.db (dbName);
 const collection = db.collection('mensaje');
 
   const server = http.createServer(async (req, res) => {
@@ -27,7 +27,7 @@ const collection = db.collection('mensaje');
         res.end(data);
       });
     }
-       else if req.url === '/productos' && req.method === 'POST'){
+       else if (req.url === '/productos' && req.method === 'POST'){
         let body = '';
         req.on('data', chunk => {
               body += chunk;
@@ -36,8 +36,9 @@ const collection = db.collection('mensaje');
          const producto = JSON.parse(body);
         await
   db.collection('productos').insertOne(producto);
-  res.writeHead(200.{'Content-Type: 'application/json'});
-res.end(JSON.stringify({ ok:true}));});}
+  res.writeHead(200,{'Content-Type: 'application/json'});
+res.end(JSON.stringify({ ok:true}));
+}catch(err) {console.error(err);}});}
 
 else if(req.url ==='/productos'&& req.method === 'GET') {
 
@@ -48,7 +49,7 @@ const productos = await db
    
      res.writeHead(200, {
           'Content-Type': 'application/json'});
-       res.end(JSon.stringify(productos));}
+       res.end(JSON.stringify(productos));}
     else if(req.url === '/productos/sumar' && req.method === 'POST') {
   let body ='';
   req.on('end', async() => {
@@ -57,18 +58,18 @@ const productos = await db
      await
 db.collection ('productos').updateOne (
       {ID:datos .id },{
-  $inc:{  stock: datos.cantidad}});
+  $inc:{ Stock: datos.cantidad}});
 res.end('ok');});}
 else if (req.url ==='/ventas' && req.method === 'POST') {
    let body = '';
-req.on('data'; chunk => { body += chunk;});
+req.on('data', chunk => { body += chunk;});
 req.on('end', async() => {
 const datos = JSON.parse(body);
 
 await
 db.collection('productos').updateOne({
    ID:  datos.productoID},{
-$inc: {stock: -datos.cantidad}});
+$inc: { Stock: -datos.cantidad}});
 res.end('ok');});
 }
     else if (req.url === '/mensajes' && req.method === 'GET') {
