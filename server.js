@@ -62,7 +62,7 @@ const productos = await db
        res.end(JSON.stringify(productos));}
     else if(req.url === '/productos/sumar' && req.method === 'POST') {
   let body ='';
-req.on('data?, chunk =>{ body +=chunk;});
+req.on('data', chunk =>{ body +=chunk;});
   req.on('end', async() => {
       const datos = JSON.parse(body);
 
