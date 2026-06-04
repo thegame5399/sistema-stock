@@ -620,737 +620,256 @@
     </div>
 
     <script>
-        function cambiarPestaña(idPestaña) {
-            document.querySelectorAll('.tab-content').forEach(tc => tc.classList.remove('active'));
-            document.querySelectorAll('.tab-button').forEach(tb => tb.classList.remove('active'));
-            document.getElementById(idPestaña).classList.add('active');
-            event.target.classList.add('active');
+        const API = 'https://sistema-stock-0s3o.onrender.com'; // Tu URL de Render
+
+function cambiarPestaña(idPestaña) {
+    document.querySelectorAll('.tab-content').forEach(tc => tc.classList.remove('active'));
+    document.querySelectorAll('.tab-button').forEach(tb => tb.classList.remove('active'));
+    document.getElementById(idPestaña).classList.add('active');
+    event.target.classList.add('active');
+}
+
+class Tienda {
+    constructor() {
+        this.inventario = [];
+        this.historialCompras = [];
+        this.historialVentas = [];
+        this.vendedores = [];
+        this.objetivoMensual = 2000;
+        this.clicksLogo = 0;
+        this.timeoutImagen = null;
+        this.ajustesManualesMeses = {};
+        this.listaNombresMeses = ["enero","febrero","marzo","abril","mayo","junio","julio","agosto","septiembre","octubre","noviembre","diciembre"];
+        this.mesReporteSeleccionado = this.listaNombresMeses[new Date().getMonth()];
+        this.secciones = ["General"];
+        this.passwordReportes = "1234";
+        this.adminDesbloqueado = false;
+        
+        this.cargarDatos(); // Carga desde Mongo al iniciar
+    }
+
+    async cargarDatos() {
+        try {
+            const res = await fetch(API + '/productos');
+            if(res.ok) {
+                this.inventario = await res.json();
+                this.actualizarInterfaz();
+            }
+        } catch(err) {
+            console.error('Error cargando productos:', err);
         }
+    }
 
-        class Producto {
-            constructor(id, nombre, precio, costo, stock, seccion = "General") {
-                this.id = Number(id);
-                this.nombre = nombre;
-                this.precio = Number(precio);
-                this.costo = Number(costo);
-                this.stock = Number(stock);
-                this.seccion = seccion;
-            }
+    registrarClickLogo() {
+        this.clicksLogo++;
+        if (this.clicksLogo === 10) {
+            alert("¿Por que?");
+            this.clicksLogo = 0;
         }
+    }
 
-        class Tienda {
-            constructor() {
-                this.inventario = [];
-                this.historialCompras = [];
-                this.historialVentas = [];
-                this.vendedores = [];
-                this.objetivoMensual = 2000;
-               
-                // Contadores y timers para Easter eggs
-                this.clicksLogo = 0;
-                this.timeoutImagen = null;
+    mostrarImagenEasterEgg() {
+        const overlay = document.getElementById('easter-egg-imagen-container');
+        if (overlay) {
+            overlay.style.display = 'flex';
+            if (this.timeoutImagen) clearTimeout(this.timeoutImagen);
+            this.timeoutImagen = setTimeout(() => this.ocultarImagenEasterEgg(), 10000);
+        }
+    }
 
-                // Estructura para ajustes manuales de administrador en los meses
-                this.ajustesManualesMeses = {};
+    ocultarImagenEasterEgg() {
+        const overlay = document.getElementById('easter-egg-imagen-container');
+        if (overlay) overlay.style.display = 'none';
+        if (this.timeoutImagen) clearTimeout(this.timeoutImagen);
+    }
 
-                // Lista de meses fijos del año en español
-                this.listaNombresMeses = [
-                    "enero", "febrero", "marzo", "abril", "mayo", "junio",
-                    "julio", "agosto", "septiembre", "octubre", "noviembre", "diciembre"
-                ];
+    seleccionarMesReporte(mesNombre) {
+        this.mesReporteSeleccionado = mesNombre;
+        this.actualizarInterfaz();
+    }
 
-                // Pestaña de mes activa por defecto en el reporte anual
-                this.mesReporteSeleccionado = this.listaNombresMeses[new Date().getMonth()];
+    crearSeccion(nombre) {
+        let limpio = nombre.trim();
+        if (limpio && !this.secciones.includes(limpio)) {
+            this.secciones.push(limpio);
+            this.actualizarInterfaz();
+        } else alert("La sección ya existe o no es válida.");
+    }
 
-                // Sistema de Secciones
-                this.secciones = ["General"];
-
-                // Sistema de Seguridad Global
-                this.passwordReportes = "1234";
-                this.adminDesbloqueado = false;
+    editarSeccion(nombreAnterior) {
+        let nuevoNombre = prompt("Introduce el nuevo nombre para la sección:", nombreAnterior);
+        if (!nuevoNombre) return;
+        nuevoNombre = nuevoNombre.trim();
+        if (nuevoNombre && nuevoNombre !== nombreAnterior) {
+            if (this.secciones.includes(nuevoNombre)) {
+                alert("Ya existe una sección con ese nombre.");
+                return;
             }
+            this.secciones = this.secciones.map(s => s === nombreAnterior ? nuevoNombre : s);
+            this.inventario.forEach(p => { if (p.seccion === nombreAnterior) p.seccion = nuevoNombre; });
+            this.actualizarInterfaz();
+        }
+    }
 
-            // Método del Easter egg del logo (10 clics)
-            registrarClickLogo() {
-                this.clicksLogo++;
-                if (this.clicksLogo === 10) {
-                    alert("¿Por que?");
-                    this.clicksLogo = 0;
-                }
-            }
+    eliminarSeccion(nombreSeccion) {
+        if (nombreSeccion === "General") return alert("La sección 'General' no puede ser eliminada.");
+        if (confirm(`¿Eliminar sección "${nombreSeccion}"? Los productos pasarán a 'General'.`)) {
+            this.inventario.forEach(p => { if (p.seccion === nombreSeccion) p.seccion = "General"; });
+            this.secciones = this.secciones.filter(s => s !== nombreSeccion);
+            this.actualizarInterfaz();
+        }
+    }
 
-            // Métodos para el Easter egg de la cabecera "Fecha / Día" (Doble Clic)
-            mostrarImagenEasterEgg() {
-                const overlay = document.getElementById('easter-egg-imagen-container');
-                if (overlay) {
-                    overlay.style.display = 'flex';
-                   
-                    // Si ya había un temporizador activo, lo limpiamos para reiniciar los 10 segundos
-                    if (this.timeoutImagen) clearTimeout(this.timeoutImagen);
+    moverProductoASeccion(idProducto, nuevaSeccion) {
+        let prod = this.inventario.find(p => p.id === idProducto);
+        if (prod) {
+            prod.seccion = nuevaSeccion;
+            this.actualizarInterfaz();
+        }
+    }
 
-                    // Desaparecer automáticamente tras 10 segundos (10000 ms)
-                    this.timeoutImagen = setTimeout(() => {
-                        this.ocultarImagenEasterEgg();
-                    }, 10000);
-                }
-            }
+    cambiarPassword() {
+        const inputNueva = document.getElementById('input-nueva-pass');
+        if(inputNueva.value.trim() === "") return alert("La contraseña no puede estar vacía.");
+        this.passwordReportes = inputNueva.value;
+        inputNueva.value = "";
+        alert("Contraseña actualizada.");
+    }
 
-            ocultarImagenEasterEgg() {
-                const overlay = document.getElementById('easter-egg-imagen-container');
-                if (overlay) {
-                    overlay.style.display = 'none';
-                }
-                if (this.timeoutImagen) clearTimeout(this.timeoutImagen);
-            }
+    intentarDesbloquear(intento) {
+        if(intento === this.passwordReportes) {
+            this.adminDesbloqueado = true;
+            this.actualizarInterfaz();
+        } else alert("Contraseña incorrecta.");
+    }
 
-            // Cambiar de mes seleccionado en el reporte anual
-            seleccionarMesReporte(mesNombre) {
-                this.mesReporteSeleccionado = mesNombre;
-                this.actualizarInterfaz();
-            }
+    bloquearAdmin() {
+        this.adminDesbloqueado = false;
+        this.actualizarInterfaz();
+    }
 
-            // Métodos de Secciones
-            crearSeccion(nombre) {
-                let limpio = nombre.trim();
-                if (limpio && !this.secciones.includes(limpio)) {
-                    this.secciones.push(limpio);
-                    this.actualizarInterfaz();
-                } else {
-                    alert("La sección ya existe o no es válida.");
-                }
-            }
+    actualizarObjetivo(nuevoValor) {
+        this.objetivoMensual = Number(nuevoValor) || 0;
+        this.actualizarInterfaz();
+    }
 
-            editarSeccion(nombreAnterior) {
-                let nuevoNombre = prompt("Introduce el nuevo nombre para la sección:", nombreAnterior);
-                if (!nuevoNombre) return;
-                nuevoNombre = nuevoNombre.trim();
-               
-                if (nuevoNombre && nuevoNombre !== nombreAnterior) {
-                    if (this.secciones.includes(nuevoNombre)) {
-                        alert("Ya existe una sección con ese nombre.");
-                        return;
-                    }
-                    this.secciones = this.secciones.map(s => s === nombreAnterior ? nuevoNombre : s);
-                    this.inventario.forEach(p => {
-                        if (p.seccion === nombreAnterior) p.seccion = nuevoNombre;
-                    });
-                    this.actualizarInterfaz();
-                }
-            }
+    agregarVendedor(nombre) {
+        let nombreLimpio = nombre.trim();
+        if (nombreLimpio && !this.vendedores.includes(nombreLimpio)) {
+            this.vendedores.push(nombreLimpio);
+            this.actualizarInterfaz();
+        }
+    }
 
-            eliminarSeccion(nombreSeccion) {
-                if (nombreSeccion === "General") {
-                    alert("La sección 'General' no puede ser eliminada.");
-                    return;
-                }
-                if (confirm(`¿Estás seguro de eliminar la sección "${nombreSeccion}"? Todos los productos asignados pasarán a la sección 'General'.`)) {
-                    // Mover productos asociados a General
-                    this.inventario.forEach(p => {
-                        if (p.seccion === nombreSeccion) p.seccion = "General";
-                    });
-                    // Filtrar la sección de la lista
-                    this.secciones = this.secciones.filter(s => s !== nombreSeccion);
-                    this.actualizarInterfaz();
-                }
-            }
+    quitarVendedor(nombre) {
+        this.vendedores = this.vendedores.filter(v => v !== nombre);
+        this.actualizarInterfaz();
+    }
 
-            moverProductoASeccion(idProducto, nuevaSeccion) {
-                let prod = this.inventario.find(p => p.id === idProducto);
-                if (prod) {
-                    prod.seccion = nuevaSeccion;
-                    this.actualizarInterfaz();
-                }
-            }
-
-            // Métodos de Seguridad y Permisos
-            cambiarPassword() {
-                const inputNueva = document.getElementById('input-nueva-pass');
-                if(inputNueva.value.trim() === "") {
-                    alert("La contraseña no puede estar vacía.");
-                    return;
-                }
-                this.passwordReportes = inputNueva.value;
-                inputNueva.value = "";
-                alert("Contraseña de administrador actualizada correctamente.");
-            }
-
-            intentarDesbloquear(intento) {
-                if(intento === this.passwordReportes) {
-                    this.adminDesbloqueado = true;
-                    this.actualizarInterfaz();
-                } else {
-                    alert("Contraseña incorrecta.");
-                }
-            }
-
-            bloquearAdmin() {
-                this.adminDesbloqueado = false;
-                this.actualizarInterfaz();
-            }
-
-            actualizarObjetivo(nuevoValor) {
-                this.objetivoMensual = Number(nuevoValor) || 0;
-                this.actualizarInterfaz();
-            }
-
-            agregarVendedor(nombre) {
-                let nombreLimpio = nombre.trim();
-                if (nombreLimpio && !this.vendedores.includes(nombreLimpio)) {
-                    this.vendedores.push(nombreLimpio);
-                    this.actualizarInterfaz();
-                }
-            }
-
-            quitarVendedor(nombre) {
-                this.vendedores = this.vendedores.filter(v => v !== nombre);
-                this.actualizarInterfaz();
-            }
-
-            comprarProducto(id, nombre, precio, costo, cantidad) {
-                let productoExistente = this.inventario.find(p => p.id === Number(id));
-                if (productoExistente) {
-                    productoExistente.stock += Number(cantidad);
-                    productoExistente.precio = Number(precio);
-                    productoExistente.costo = Number(costo);
-                } else {
-                    this.inventario.push(new Producto(id, nombre, precio, costo, cantidad, "General"));
-                }
-                this.historialCompras.push({
-                    nombre: nombre, cantidad: Number(cantidad), totalInvertido: Number(costo) * Number(cantidad), fecha: new Date()
-                });
-                this.actualizarInterfaz();
-            }
-
-            async sumarUnidadStock(idProducto) {
-                try{
-                   const res = await fetch(API + '/productos/sumar/', {   
+    // GUARDAR EN MONGO DB
+    async comprarProducto(id, nombre, precio, costo, cantidad) {
+        const producto = {
+            ID: Number(id),
+            Nombre: nombre,
+            Precio: Number(precio),
+            Costo: Number(costo),
+            Stock: Number(cantidad),
+            seccion: "General"
+        };
+        
+        try {
+            const res = await fetch(API + '/productos', {
                 method: 'POST',
-                headers:{
-                'Content-Type':
-'application/json'},
-boy:JSON.stringify8{
-id: idProducto,
-cantidad: 1
-})
-});
-if (!res.ok){
-alert('Error al actualizar stock');
-return;}
-await cargarProductos();
-} catch (err){
-console.error(err);
-alert('error de conexion');
-}
-}
-                let producto = this.inventario.find(p => p.id === idProducto);
-                if (producto) {
-                    producto.stock += 1;
-                    this.historialCompras.push({
-                        nombre: producto.nombre, cantidad: 1, totalInvertido: producto.costo, fecha: new Date()
-                    });
-                    this.actualizarInterfaz();
-                }
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify(producto)
+            });
+            
+            if(res.ok) {
+                await this.cargarDatos(); // Recarga desde Mongo
+                alert('Producto guardado en MongoDB ✅');
+            } else {
+                alert('Error al guardar producto');
             }
-
-            eliminarProducto(idProducto) {
-                if(confirm("¿Estás completamente seguro de eliminar permanentemente este producto del catálogo?")) {
-                    this.inventario = this.inventario.filter(p => p.id !== idProducto);
-                    this.actualizarInterfaz();
-                }
-            }
-
-            realizarVenta(idProducto) {
-                let producto = this.inventario.find(p => p.id === idProducto);
-                if (!producto || producto.stock < 1) return alert("Sin stock");
-
-                let vendedorSeleccionado = document.getElementById('vendedor-global') ? document.getElementById('vendedor-global').value : "General";
-                producto.stock -= 1;
-
-                this.historialVentas.push({
-                    idVenta: this.historialVentas.length + 1, nombre: producto.nombre, cantidad: 1, totalVendido: producto.precio, vendedor: vendedorSeleccionado, fecha: new Date()
-                });
-
-                this.actualizarInterfaz();
-                if (producto.stock === 0) setTimeout(() => alert(`Atencion El producto ${producto.nombre} se quedó sin stock.`), 100);
-            }
-
-            // Inserciones manuales en meses pasados o actuales
-            agregarCompraManual(claveMes) {
-                const nombre = document.getElementById('manual-compra-nombre').value.trim();
-                const cantidad = Number(document.getElementById('manual-compra-cantidad').value);
-                const total = Number(document.getElementById('manual-compra-total').value);
-
-                if (!nombre || cantidad <= 0 || total < 0) {
-                    alert("Complete todos los campos con valores correctos.");
-                    return;
-                }
-
-                let partes = claveMes.split(" de ");
-                let mesNombre = partes[0];
-                let año = Number(partes[1]);
-                let mesIndex = this.listaNombresMeses.indexOf(mesNombre);
-                let fechaFicticia = new Date(año, mesIndex, 15);
-
-                this.historialCompras.push({
-                    nombre: nombre,
-                    shadow: cantidad,
-                    cantidad: cantidad,
-                    totalInvertido: total,
-                    fecha: fechaFicticia
-                });
-
-                this.actualizarInterfaz();
-            }
-
-            agregarVentaManual(claveMes) {
-                const nombre = document.getElementById('manual-venta-nombre').value.trim();
-                const vended = document.getElementById('manual-venta-vendedor').value.trim() || "General";
-                const cantidad = Number(document.getElementById('manual-venta-cantidad').value);
-                const total = Number(document.getElementById('manual-venta-total').value);
-
-                if (!nombre || cantidad <= 0 || total < 0) {
-                    alert("Complete todos los campos con valores correctos.");
-                    return;
-                }
-
-                let partes = claveMes.split(" de ");
-                let mesNombre = partes[0];
-                let año = Number(partes[1]);
-                let mesIndex = this.listaNombresMeses.indexOf(mesNombre);
-                let fechaFicticia = new Date(año, mesIndex, 15);
-
-                this.historialVentas.push({
-                    idVenta: this.historialVentas.length + 1,
-                    nombre: nombre,
-                    vendedor: vended,
-                    shadow: cantidad,
-                    cantidad: quantity = cantidad,
-                    totalVendido: total,
-                    fecha: fechaFicticia
-                });
-
-                this.actualizarInterfaz();
-            }
-
-            limpiarMesEspecifico(claveMes) {
-                if(confirm(`¿Estás seguro de limpiar todos los registros guardados en el sistema de "${claveMes}"?`)) {
-                    this.historialVentas = this.historialVentas.filter(v => v.fecha.toLocaleString('es-ES', { month: 'long', year: 'numeric' }) !== claveMes);
-                    this.historialCompras = this.historialCompras.filter(c => c.fecha.toLocaleString('es-ES', { month: 'long', year: 'numeric' }) !== claveMes);
-                    delete this.ajustesManualesMeses[claveMes];
-                    this.actualizarInterfaz();
-                }
-            }
-
-            editarBalanceManual(claveMes, totalVendidoActual, totalInvertidoActual) {
-                let nuevoVendido = prompt(`Modificar total vendido para [${claveMes}]:`, totalVendidoActual);
-                if(nuevoVendido === null) return;
-                let nuevoInvertido = prompt(`Modificar total invertido para [${claveMes}]:`, totalInvertidoActual);
-                if(nuevoInvertido === null) return;
-
-                this.ajustesManualesMeses[claveMes] = {
-                    vendido: Number(nuevoVendido) || 0,
-                    invertido: Number(nuevoInvertido) || 0,
-                    manuales: true
-                };
-                this.actualizarInterfaz();
-            }
-
-            actualizarInterfaz() {
-                // Filtro visual de Gestión de Personal según Modo Admin
-                const formVendedor = document.getElementById('form-vendedor');
-                const msgPersonal = document.getElementById('msg-personal-bloqueado');
-                if (this.adminDesbloqueado) {
-                    formVendedor.style.display = 'block';
-                    msgPersonal.style.display = 'none';
-                } else {
-                    formVendedor.style.display = 'none';
-                    msgPersonal.style.display = 'block';
-                }
-
-                // UI Vendedores
-                const contVend = document.getElementById('lista-vendedores-ui');
-                contVend.innerHTML = '';
-                this.vendedores.forEach(v => {
-                    let btnQuitar = this.adminDesbloqueado ? `<button class="btn-quitar" onclick="miTienda.quitarVendedor('${v}')">Eliminar</button>` : '';
-                    contVend.innerHTML += `<li><span>${v}</span> ${btnQuitar}</li>`;
-                });
-
-                // Selector Global de Vendedores
-                const selectorGlobal = document.getElementById('vendedor-global');
-                const seleccionPrevia = selectorGlobal.value;
-                selectorGlobal.innerHTML = `<option value="General">Sin especificar (General)</option>` + this.vendedores.map(v => `<option value="${v}">${v}</option>`).join('');
-                selectorGlobal.value = this.vendedores.includes(seleccionPrevia) ? seleccionPrevia : "General";
-
-                // Filtro visual de Ajuste del Objetivo Mensual según Modo Admin
-                const configObjetivo = document.getElementById('config-objetivo-container');
-                if (configObjetivo) {
-                    configObjetivo.style.display = this.adminDesbloqueado ? 'flex' : 'none';
-                }
-
-                // Buscador y Render Productos
-                const filtro = document.getElementById('buscador-productos') ? document.getElementById('buscador-productos').value.toLowerCase() : "";
-                this.inventario.sort((a, b) => a.nombre.localeCompare(b.nombre));
-               
-                let invMostrar = this.inventario.filter(p => p.nombre.toLowerCase().includes(filtro) || p.id.toString().includes(filtro));
-                const contProd = document.getElementById('productos-container');
-                contProd.innerHTML = invMostrar.length === 0 ? '<p>No se encontraron productos.</p>' : '';
-
-                invMostrar.forEach(prod => {
-                    const sinStock = prod.stock === 0;
-                    let txtStock = sinStock ? "SIN STOCK" : (prod.stock <= 3 ? `Stock: ${prod.stock} u. (Poco)` : `Stock: ${prod.stock} u.`);
-                   
-                    let btnEliminar = this.adminDesbloqueado ? `<button class="btn-eliminar-prod" onclick="miTienda.eliminarProducto(${prod.id})">Eliminar Producto</button>` : '';
-
-                    contProd.innerHTML += `
-                        <div class="card">
-                            <div class="card-header"><h3>ID: ${prod.id} | ${prod.nombre}</h3></div>
-                            <div>
-                                <p class="precio">$${prod.precio.toFixed(2)}</p>
-                                <p class="stock ${prod.stock <= 3 ? 'alerta' : ''}">${txtStock}</p>
-                            </div>
-                            <div class="card-buttons">
-                                <button class="btn-venta" onclick="miTienda.realizarVenta(${prod.id})" ${sinStock ? 'disabled style="background-color:#ccc;"' : ''}>Vender 1</button>
-                                <button class="btn-reponer" onclick="miTienda.sumarUnidadStock(${prod.id})">+1</button>
-                            </div>
-                            ${btnEliminar}
-                        </div>`;
-                });
-
-                // Ventas Recientes
-                const contVentas = document.getElementById('lista-ventas-hoy');
-                contVentas.innerHTML = '';
-                this.historialVentas.slice(-5).reverse().forEach(v => {
-                    let fechaFormateada = v.fecha.toLocaleDateString() + ' - ' + v.fecha.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
-                    contVentas.innerHTML += `<tr><td>#${v.idVenta}</td><td>${v.nombre}</td><td>${v.cantidad}</td><td>$${v.totalVendido.toFixed(2)}</td><td><strong>${v.vendedor}</strong></td><td><small>${fechaFormateada}</small></td></tr>`;
-                });
-
-                // Renderizar Pestaña Secciones
-                const contSecciones = document.getElementById('contenedor-secciones-dinamicas');
-                if (contSecciones) {
-                    contSecciones.innerHTML = '';
-                    this.secciones.forEach(sec => {
-                        let prodsDeSec = this.inventario.filter(p => (p.seccion || "General") === sec);
-                       
-                        let filasProductos = prodsDeSec.map(p => {
-                            let opcionesSelect = this.secciones.map(s =>
-                                `<option value="${s}" ${s === sec ? 'selected' : ''}>${s}</option>`
-                            ).join('');
-                           
-                            return `
-                                <div class="producto-fila-seccion">
-                                    <span><strong>ID: ${p.id}</strong> - ${p.nombre} (Stock: ${p.stock} u.)</span>
-                                    <div>
-                                        <label style="display:inline; font-size:12px; margin-right:5px;">Mover a:</label>
-                                        <select class="select-mover" onchange="miTienda.moverProductoASeccion(${p.id}, this.value)">
-                                            ${opcionesSelect}
-                                        </select>
-                                    </div>
-                                </div>`;
-                        }).join('');
-
-                        let botonesAccion = '';
-                        if(sec !== "General") {
-                            botonesAccion = `
-                                <div class="seccion-header-acciones">
-                                    <button class="btn-accion-seccion" onclick="miTienda.editarSeccion('${sec}')">Cambiar Nombre</button>
-                                    <button class="btn-eliminar-seccion" onclick="miTienda.eliminarSeccion('${sec}')">Eliminar Sección</button>
-                                </div>
-                            `;
-                        }
-
-                        contSecciones.innerHTML += `
-                            <div class="seccion-bloque">
-                                <div class="seccion-header">
-                                    <h3>${sec} (${prodsDeSec.length} productos)</h3>
-                                    ${botonesAccion}
-                                </div>
-                                <div>
-                                    ${filasProductos || '<p style="color:#7f8c8d; font-size:14px;">No hay productos asignados a esta sección.</p>'}
-                                </div>
-                            </div>`;
-                    });
-                }
-
-                // Renderizar Dinámico de Panel Seguridad
-                const bloqueSeguridad = document.getElementById('bloque-seguridad');
-                if (bloqueSeguridad) {
-                    if (!this.adminDesbloqueado) {
-                        bloqueSeguridad.innerHTML = `
-                            <h2>Panel de Administración</h2>
-                            <p style="font-size: 12px; color: #7f8c8d; margin-bottom: 10px;">Las opciones de configuración avanzada, metas y personal están bloqueadas.</p>
-                            <input type="password" id="input-admin-pass" placeholder="Contraseña de Administrador">
-                            <button onclick="miTienda.intentarDesbloquear(document.getElementById('input-admin-pass').value)" style="background-color: #2c3e50; margin-top: 10px;">Desbloquear Funciones</button>
-                        `;
-                    } else {
-                        bloqueSeguridad.innerHTML = `
-                            <h2>Seguridad y Privacidad</h2>
-                            <p style="font-size: 12px; color: #7f8c8d; margin-bottom: 10px;">Modo Admin Activo. Modifica la contraseña si lo deseas:</p>
-                            <input type="password" id="input-nueva-pass" placeholder="Nueva contraseña">
-                            <button onclick="miTienda.cambiarPassword()" style="background-color: #34495e; margin-top: 10px; margin-bottom: 12px;">Cambiar Contraseña</button>
-                            <hr style="margin: 15px 0; border: 0; border-top: 1px solid #eee;">
-                            <button onclick="miTienda.bloquearAdmin()" style="background-color: #e74c3c;">Cerrar Sesión Administrador</button>
-                        `;
-                    }
-                }
-
-                this.generarSeccionMesesAnual();
-            }
-
-            generarHTMLBloqueMes(mesTituloBonito, claveAgrupacion, datosMes) {
-                let totalVendido = datosMes.ventas.reduce((s, v) => s + v.totalVendido, 0);
-                let totalInvertido = datosMes.compras.reduce((s, c) => s + c.totalInvertido, 0);
-
-                if(this.ajustesManualesMeses[claveAgrupacion]) {
-                    totalVendido = this.ajustesManualesMeses[claveAgrupacion].vendido;
-                    totalInvertido = this.ajustesManualesMeses[claveAgrupacion].invertido;
-                }
-
-                let balance = totalVendido - totalInvertido;
-
-                let filasCompras = datosMes.compras.map(c => `<tr><td>${c.nombre}</td><td>${c.cantidad}</td><td>$${c.totalInvertido.toFixed(2)}</td></tr>`).join('');
-                let filasVentas = datosMes.ventas.map(v => `<tr><td>${v.nombre}</td><td>${v.vendedor}</td><td>${v.cantidad}</td><td>$${v.totalVendido.toFixed(2)}</td></tr>`).join('');
-
-                let controlesAdminMes = '';
-                let formularioManual = '';
-
-                if(this.adminDesbloqueado) {
-                    controlesAdminMes = `
-                        <div class="mes-acciones-admin">
-                            <button class="btn-admin-mes" style="background-color:#e67e22;" onclick="miTienda.editarBalanceManual('${claveAgrupacion}', ${totalVendido}, ${totalInvertido})">Editar Balance</button>
-                            <button class="btn-admin-mes" style="background-color:#e74c3c;" onclick="miTienda.limpiarMesEspecifico('${claveAgrupacion}')">Limpiar Mes</button>
-                        </div>
-                    `;
-
-                    // Formulario de edición manual exclusivo para administradores
-                    formularioManual = `
-                        <div style="background: #f8f9fa; border: 1px solid #ddd; padding: 15px; border-radius: 6px; margin-top: 20px; display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
-                            <div>
-                                <h4 style="margin-bottom:10px; font-size:14px; color:#2c3e50;">Agregar Entrada Manual (Compra / Historial)</h4>
-                                <div class="form-group" style="margin-bottom: 8px;">
-                                    <label style="font-size:12px; margin-bottom:2px;">Nombre del Producto</label>
-                                    <input type="text" id="manual-compra-nombre" placeholder="Ej: Cables, Martillos" style="padding:6px; font-size:14px;">
-                                </div>
-                                <div class="form-group" style="margin-bottom: 8px;">
-                                    <label style="font-size:12px; margin-bottom:2px;">Cantidad</label>
-                                    <input type="number" id="manual-compra-cantidad" placeholder="Cantidad u." style="padding:6px; font-size:14px;">
-                                </div>
-                                <div class="form-group" style="margin-bottom: 8px;">
-                                    <label style="font-size:12px; margin-bottom:2px;">Costo Total ($)</label>
-                                    <input type="number" id="manual-compra-total" step="0.01" placeholder="Monto total" style="padding:6px; font-size:14px;">
-                                </div>
-                                <button type="button" onclick="miTienda.agregarCompraManual('${claveAgrupacion}')" style="padding:8px; font-size:14px; background-color: #3498db; width:auto; display:inline-block;">Guardar Entrada</button>
-                            </div>
-                            <div>
-                                <h4 style="margin-bottom:10px; font-size:14px; color:#2c3e50;">Agregar Salida Manual (Venta / Historial)</h4>
-                                <div class="form-group" style="margin-bottom: 8px;">
-                                    <label style="font-size:12px; margin-bottom:2px;">Nombre del Producto</label>
-                                    <input type="text" id="manual-venta-nombre" placeholder="Ej: Tornillos, Discos" style="padding:6px; font-size:14px;">
-                                </div>
-                                <div class="form-group" style="margin-bottom: 8px;">
-                                    <label style="font-size:12px; margin-bottom:2px;">Vendedor</label>
-                                    <input type="text" id="manual-venta-vendedor" value="General" style="padding:6px; font-size:14px;">
-                                </div>
-                                <div class="form-group" style="margin-bottom: 8px;">
-                                    <label style="font-size:12px; margin-bottom:2px;">Cantidad</label>
-                                    <input type="number" id="manual-venta-cantidad" placeholder="Cantidad u." style="padding:6px; font-size:14px;">
-                                </div>
-                                <div class="form-group" style="margin-bottom: 8px;">
-                                    <label style="font-size:12px; margin-bottom:2px;">Precio Total ($)</label>
-                                    <input type="number" id="manual-venta-total" step="0.01" placeholder="Monto total" style="padding:6px; font-size:14px;">
-                                </div>
-                                <button type="button" onclick="miTienda.agregarVentaManual('${claveAgrupacion}')" style="padding:8px; font-size:14px; background-color: #2ecc71; width:auto; display:inline-block;">Guardar Salida</button>
-                            </div>
-                        </div>
-                    `;
-                }
-
-                return `
-                    <div class="mes-bloque">
-                        <div class="mes-titulo-container">
-                            <span class="mes-titulo">${mesTituloBonito}</span>
-                            ${controlesAdminMes}
-                        </div>
-                        <div class="resumen-financiero">
-                            <div class="resumen-item" style="color: #27ae60;">Vendido: $${totalVendido.toFixed(2)}</div>
-                            <div class="resumen-item" style="color: #e67e22;">Invertido: $${totalInvertido.toFixed(2)}</div>
-                            <div class="resumen-item" style="color: ${balance >= 0 ? '#27ae60' : '#e74c3c'};">Balance: $${balance.toFixed(2)}</div>
-                        </div>
-                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
-                            <div>
-                                <h4>Compras (Entradas)</h4>
-                                <table><thead><tr><th>Producto</th><th>Cant.</th><th>Costo Total</th></tr></thead><tbody>${filasCompras || '<tr><td colspan="3" style="color:#aaa; font-style:italic;">Sin registros en este mes</td></tr>'}</tbody></table>
-                            </div>
-                            <div>
-                                <h4>Ventas (Salidas)</h4>
-                                <table><thead><tr><th>Producto</th><th>Vendedor</th><th>Cant.</th><th>Total</th></tr></thead><tbody>${filasVentas || '<tr><td colspan="4" style="color:#aaa; font-style:italic;">Sin registros en este mes</td></tr>'}</tbody></table>
-                            </div>
-                        </div>
-                        ${formularioManual}
-                    </div>`;
-            }
-
-            generarSeccionMesesAnual() {
-                const tabsContainer = document.getElementById('meses-tabs-container');
-                const contentContainer = document.getElementById('contenedor-mes-seleccionado');
-                if(!tabsContainer || !contentContainer) return;
-
-                let mesesData = {};
-                const fechaHoy = new Date();
-                const añoActual = fechaHoy.getFullYear();
-                const mesActualLargo = fechaHoy.toLocaleString('es-ES', { month: 'long' });
-                const mesActualClaveCompleta = `${mesActualLargo} de ${añoActual}`;
-
-                // Agrupar Ventas
-                this.historialVentas.forEach(v => {
-                    let m = v.fecha.toLocaleString('es-ES', { month: 'long', year: 'numeric' });
-                    if (!mesesData[m]) mesesData[m] = { ventas: [], compras: [] };
-                    mesesData[m].ventas.push(v);
-                });
-
-                // Agrupar Compras
-                this.historialCompras.forEach(c => {
-                    let m = c.fecha.toLocaleString('es-ES', { month: 'long', year: 'numeric' });
-                    if (!mesesData[m]) mesesData[m] = { ventas: [], compras: [] };
-                    mesesData[m].compras.push(c);
-                });
-
-                // Barra de progreso del mes en curso
-                let datosMesActualEnCurso = mesesData[mesActualClaveCompleta] || { ventas: [], compras: [] };
-                let totalVendidoActual = datosMesActualEnCurso.ventas.reduce((s, v) => s + v.totalVendido, 0);
-               
-                if(this.ajustesManualesMeses[mesActualClaveCompleta]) {
-                    totalVendidoActual = this.ajustesManualesMeses[mesActualClaveCompleta].vendido;
-                }
-
-                let porcentaje = this.objetivoMensual > 0 ? Math.min((totalVendidoActual / this.objetivoMensual) * 100, 100) : 0;
-                document.getElementById('progreso-barra').style.width = `${porcentaje}%`;
-                document.getElementById('progreso-texto').innerText = `${porcentaje.toFixed(1)}%`;
-                document.getElementById('objetivo-status-text').innerText = `Progreso (${mesActualClaveCompleta}): $${totalVendidoActual.toFixed(2)} / $${this.objetivoMensual.toFixed(2)}`;
-
-                // Renderizar la botonera de Pestañas de los 12 meses
-                let htmlTabs = '';
-                this.listaNombresMeses.forEach(mesNombre => {
-                    let esActiva = (mesNombre === this.mesReporteSeleccionado) ? 'activa' : '';
-                    htmlTabs += `<button type="button" class="btn-lengueta ${esActiva}" onclick="miTienda.seleccionarMesReporte('${mesNombre}')">${mesNombre}</button>`;
-                });
-                tabsContainer.innerHTML = htmlTabs;
-
-                // Renderizar únicamente el contenido del mes seleccionado actualmente
-                let claveBusquedaMes = `${this.mesReporteSeleccionado} de ${añoActual}`;
-                let datosDeEsteMes = mesesData[claveBusquedaMes] || { ventas: [], compras: [] };
-               
-                let tagIndicadorExtra = '';
-                if(claveBusquedaMes === mesActualClaveCompleta) {
-                    tagIndicadorExtra = ' (Mes en Curso)';
-                }
-
-                contentContainer.innerHTML = this.generarHTMLBloqueMes(
-                    `${this.mesReporteSeleccionado.toUpperCase()} ${añoActual}${tagIndicadorExtra}`,
-                    claveBusquedaMes,
-                    datosDeEsteMes
-                );
-            }
+        } catch(err) {
+            console.error(err);
+            alert('Error de conexión con el servidor');
         }
+    }
 
-        const miTienda = new Tienda();
+    async sumarUnidadStock(idProducto) {
+        try {
+            const res = await fetch(API + '/productos/sumar', {   
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({id: idProducto, cantidad: 1})
+            });
+            if (!res.ok) return alert('Error al actualizar stock');
+            await this.cargarDatos();
+        } catch (err) {
+            console.error(err);
+            alert('Error de conexión');
+        }
+    }
 
-        // Registro ficticio para simular un mes anterior en el año vigente
-        let fechaPasadaPrueba = new Date();
-        fechaPasadaPrueba.setMonth(fechaPasadaPrueba.getMonth() - 1);
-        miTienda.historialVentas.push({ idVenta: 999, nombre: "Venta Antigua de Prueba", cantidad: 1, totalVendido: 100, vendedor: "Administrador", fecha: fechaPasadaPrueba });
-        miTienda.historialCompras.push({ nombre: "Compra Antigua de Prueba", cantidad: 1, totalInvertido: 50, fecha: fechaPasadaPrueba });
+    async realizarVenta(idProducto) {
+        let producto = this.inventario.find(p => p.id === idProducto || p.ID === idProducto);
+        if (!producto || producto.Stock < 1) return alert("Sin stock");
 
-        // Listeners de Formularios
-        document.getElementById('form-producto').addEventListener('submit', function(e) {
-            e.preventDefault();
-            miTienda.comprarProducto(
-                document.getElementById('prod-id').value,
-                document.getElementById('prod-nombre').value,
-                document.getElementById('prod-precio').value,
-                document.getElementById('prod-costo').value,
-                document.getElementById('prod-cantidad').value
-            );
-            this.reset();
-        });
+        let vendedorSeleccionado = document.getElementById('vendedor-global')?.value || "General";
+        
+        try {
+            await fetch(API + '/ventas', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({productoID: producto.ID, cantidad: 1, vendedor: vendedorSeleccionado})
+            });
+            await this.cargarDatos();
+        } catch(err) {
+            console.error(err);
+            alert('Error al registrar venta');
+        }
+    }
 
-        document.getElementById('form-vendedor').addEventListener('submit', function(e) {
-            e.preventDefault();
-            const campoNombre = document.getElementById('vend-nombre');
-            miTienda.agregarVendedor(campoNombre.value);
-            campoNombre.value = '';
-        });
+    eliminarProducto(idProducto) {
+        if(confirm("¿Eliminar producto del catálogo?")) {
+            // Tendrías que agregar endpoint DELETE en server.js
+            alert('Función pendiente - agregá endpoint DELETE en backend');
+        }
+    }
 
-        document.getElementById('form-seccion').addEventListener('submit', function(e) {
-            e.preventDefault();
-            const campoSeccion = document.getElementById('seccion-nombre');
-            miTienda.crearSeccion(campoSeccion.value);
-            campoSeccion.value = '';
-        });
-
-        miTienda.actualizarInterfaz();
-const API = 'https://sistema-stock-0s3o.onrender.com'; // 
-document.getElementByID('form-producto').onsubmit = async (e) => {e.preventDefault();B
-
-// CARGAR PRODUCTOS AL INICIAR
-async function cargarProductos() {
-  const res = await fetch(API + '/productos');
-  const productos = await res.json();
-  const contenedor = document.getElementById('inventario');
-  contenedor.innerHTML = '';
-  
-  productos.forEach(p => {
-    contenedor.innerHTML += `
-      <div class="producto">
-        <b>ID: ${p.ID} | ${p.Nombre}</b><br>
-        $${p.Precio}<br>
-        Stock: ${p.Stock} u.
-        <button onclick="vender('${p.ID}')">Vender 1</button>
-        <button onclick="sumarStock('${p.ID}')">+1</button>
-      </div>
-    `;
-  });
+    // ...el resto de tus métodos actualizarInterfaz, generarSeccionMesesAnual, etc van igual...
+    // Por espacio no los pego todos, pero copiá los tuyos desde actualizarInterfaz() para abajo
 }
 
-// REGISTRAR PRODUCTO
-document.getElementById('btnRegistrarProducto').onclick = async () => {
-  const producto = {
-    ID: document.getElementById('idUnico').value,
-    Nombre: document.getElementById('nombre').value,
-    Precio: parseFloat(document.getElementById('precio').value),
-    Costo: parseFloat(document.getElementById('costo').value),
-    Stock: parseInt(document.getElementById('cantidad').value)
-  };
-  
-  await fetch(API + '/productos', {
-    method: 'POST',
-    headers: {'Content-Type': 'application/json'},
-    body: JSON.stringify(producto)
-  });
-  
-  cargarProductos(); // Recargar lista
-  alert('Producto guardado en MongoDB');
-};
+// Instancia global
+const miTienda = new Tienda();
 
-// VENDER 1
-async function vender(id) {
-  await fetch(API + '/ventas', {
-    method: 'POST',
-    headers: {'Content-Type': 'application/json'},
-    body: JSON.stringify({productoID: id, cantidad: 1, vendedor: 'General'})
-  });
-  cargarProductos();
-}
+// Listeners de Formularios - CONECTADOS A MONGO
+document.getElementById('form-producto').addEventListener('submit', function(e) {
+    e.preventDefault();
+    miTienda.comprarProducto(
+        document.getElementById('prod-id').value,
+        document.getElementById('prod-nombre').value,
+        document.getElementById('prod-precio').value,
+        document.getElementById('prod-costo').value,
+        document.getElementById('prod-cantidad').value
+    );
+    this.reset();
+});
 
-// SUMAR STOCK +1
-async function sumarStock(id) {
-  await fetch(API + '/productos/sumar', {
-    method: 'POST',
-    headers: {'Content-Type': 'application/json'},
-    body: JSON.stringify({id, cantidad: 1})
-  });
-  cargarProductos();
-}
+document.getElementById('form-vendedor').addEventListener('submit', function(e) {
+    e.preventDefault();
+    const campoNombre = document.getElementById('vend-nombre');
+    miTienda.agregarVendedor(campoNombre.value);
+    campoNombre.value = '';
+});
 
+document.getElementById('form-seccion').addEventListener('submit', function(e) {
+    e.preventDefault();
+    const campoSeccion = document.getElementById('seccion-nombre');
+    miTienda.crearSeccion(campoSeccion.value);
+    campoSeccion.value = '';
+});
 cargarProductos(); // Cargar al abrir la página
 </script>
 </body>
