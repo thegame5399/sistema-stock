@@ -36,7 +36,7 @@ const collection = db.collection('mensaje');
          const producto = JSON.parse(body);
         await
   db.collection('productos').insertOne(producto);
-  res.writeHead(200,{'Content-Type: 'application/json'});
+  res.writeHead(200,{'Content-Type': 'application/json'});
 res.end(JSON.stringify({ ok:true}));
 }catch(err) {console.error(err);}});}
 
