@@ -620,7 +620,7 @@
     </div>
 
     <script>
-        const API = 'https://sistema-stock-0s3o.onrender.com'; // Tu URL de Render
+const API = 'https://sistema-stock-0s3o.onrender.com';
 
 function cambiarPestaña(idPestaña) {
     document.querySelectorAll('.tab-content').forEach(tc => tc.classList.remove('active'));
@@ -645,7 +645,7 @@ class Tienda {
         this.passwordReportes = "1234";
         this.adminDesbloqueado = false;
         
-        this.cargarDatos(); // Carga desde Mongo al iniciar
+        this.cargarDatos();
     }
 
     async cargarDatos() {
@@ -697,14 +697,11 @@ class Tienda {
     }
 
     editarSeccion(nombreAnterior) {
-        let nuevoNombre = prompt("Introduce el nuevo nombre para la sección:", nombreAnterior);
+        let nuevoNombre = prompt("Nuevo nombre para la sección:", nombreAnterior);
         if (!nuevoNombre) return;
         nuevoNombre = nuevoNombre.trim();
         if (nuevoNombre && nuevoNombre !== nombreAnterior) {
-            if (this.secciones.includes(nuevoNombre)) {
-                alert("Ya existe una sección con ese nombre.");
-                return;
-            }
+            if (this.secciones.includes(nuevoNombre)) return alert("Ya existe una sección con ese nombre.");
             this.secciones = this.secciones.map(s => s === nombreAnterior ? nuevoNombre : s);
             this.inventario.forEach(p => { if (p.seccion === nombreAnterior) p.seccion = nuevoNombre; });
             this.actualizarInterfaz();
@@ -713,7 +710,7 @@ class Tienda {
 
     eliminarSeccion(nombreSeccion) {
         if (nombreSeccion === "General") return alert("La sección 'General' no puede ser eliminada.");
-        if (confirm(`¿Eliminar sección "${nombreSeccion}"? Los productos pasarán a 'General'.`)) {
+        if (confirm(`¿Eliminar sección "${nombreSeccion}"?`)) {
             this.inventario.forEach(p => { if (p.seccion === nombreSeccion) p.seccion = "General"; });
             this.secciones = this.secciones.filter(s => s !== nombreSeccion);
             this.actualizarInterfaz();
@@ -721,7 +718,7 @@ class Tienda {
     }
 
     moverProductoASeccion(idProducto, nuevaSeccion) {
-        let prod = this.inventario.find(p => p.id === idProducto);
+        let prod = this.inventario.find(p => p.ID === idProducto);
         if (prod) {
             prod.seccion = nuevaSeccion;
             this.actualizarInterfaz();
@@ -766,7 +763,6 @@ class Tienda {
         this.actualizarInterfaz();
     }
 
-    // GUARDAR EN MONGO DB
     async comprarProducto(id, nombre, precio, costo, cantidad) {
         const producto = {
             ID: Number(id),
@@ -785,11 +781,9 @@ class Tienda {
             });
             
             if(res.ok) {
-                await this.cargarDatos(); // Recarga desde Mongo
+                await this.cargarDatos();
                 alert('Producto guardado en MongoDB ✅');
-            } else {
-                alert('Error al guardar producto');
-            }
+            } else alert('Error al guardar producto');
         } catch(err) {
             console.error(err);
             alert('Error de conexión con el servidor');
@@ -812,7 +806,7 @@ class Tienda {
     }
 
     async realizarVenta(idProducto) {
-        let producto = this.inventario.find(p => p.id === idProducto || p.ID === idProducto);
+        let producto = this.inventario.find(p => p.ID === idProducto);
         if (!producto || producto.Stock < 1) return alert("Sin stock");
 
         let vendedorSeleccionado = document.getElementById('vendedor-global')?.value || "General";
@@ -830,47 +824,65 @@ class Tienda {
         }
     }
 
-    eliminarProducto(idProducto) {
-        if(confirm("¿Eliminar producto del catálogo?")) {
-            // Tendrías que agregar endpoint DELETE en server.js
-            alert('Función pendiente - agregá endpoint DELETE en backend');
+    // === CLAVE: ACTUALIZAR INTERFAZ CON MAYÚSCULAS ===
+    actualizarInterfaz() {
+        const formVendedor = document.getElementById('form-vendedor');
+        const msgPersonal = document.getElementById('msg-personal-bloqueado');
+        if (this.adminDesbloqueado) {
+            formVendedor.style.display = 'block';
+            msgPersonal.style.display = 'none';
+        } else {
+            formVendedor.style.display = 'none';
+            msgPersonal.style.display = 'block';
         }
-    }
 
-    // ...el resto de tus métodos actualizarInterfaz, generarSeccionMesesAnual, etc van igual...
-    // Por espacio no los pego todos, pero copiá los tuyos desde actualizarInterfaz() para abajo
-}
+        const contVend = document.getElementById('lista-vendedores-ui');
+        contVend.innerHTML = '';
+        this.vendedores.forEach(v => {
+            let btnQuitar = this.adminDesbloqueado ? `<button class="btn-quitar" onclick="miTienda.quitarVendedor('${v}')">Eliminar</button>` : '';
+            contVend.innerHTML += `<li><span>${v}</span> ${btnQuitar}</li>`;
+        });
 
-// Instancia global
-const miTienda = new Tienda();
+        const selectorGlobal = document.getElementById('vendedor-global');
+        const seleccionPrevia = selectorGlobal.value;
+        selectorGlobal.innerHTML = `<option value="General">Sin especificar (General)</option>` + this.vendedores.map(v => `<option value="${v}">${v}</option>`).join('');
+        selectorGlobal.value = this.vendedores.includes(seleccionPrevia) ? seleccionPrevia : "General";
 
-// Listeners de Formularios - CONECTADOS A MONGO
-document.getElementById('form-producto').addEventListener('submit', function(e) {
-    e.preventDefault();
-    miTienda.comprarProducto(
-        document.getElementById('prod-id').value,
-        document.getElementById('prod-nombre').value,
-        document.getElementById('prod-precio').value,
-        document.getElementById('prod-costo').value,
-        document.getElementById('prod-cantidad').value
-    );
-    this.reset();
-});
+        const configObjetivo = document.getElementById('config-objetivo-container');
+        if (configObjetivo) {
+            configObjetivo.style.display = this.adminDesbloqueado ? 'flex' : 'none';
+        }
 
-document.getElementById('form-vendedor').addEventListener('submit', function(e) {
-    e.preventDefault();
-    const campoNombre = document.getElementById('vend-nombre');
-    miTienda.agregarVendedor(campoNombre.value);
-    campoNombre.value = '';
-});
+        const filtro = document.getElementById('buscador-productos') ? document.getElementById('buscador-productos').value.toLowerCase() : "";
+        this.inventario.sort((a, b) => a.Nombre.localeCompare(b.Nombre));
+       
+        let invMostrar = this.inventario.filter(p => p.Nombre.toLowerCase().includes(filtro) || p.ID.toString().includes(filtro));
+        const contProd = document.getElementById('productos-container');
+        contProd.innerHTML = invMostrar.length === 0 ? '<p>No se encontraron productos.</p>' : '';
 
-document.getElementById('form-seccion').addEventListener('submit', function(e) {
-    e.preventDefault();
-    const campoSeccion = document.getElementById('seccion-nombre');
-    miTienda.crearSeccion(campoSeccion.value);
-    campoSeccion.value = '';
-});
-cargarProductos(); // Cargar al abrir la página
+        invMostrar.forEach(prod => {
+            const sinStock = prod.Stock === 0;
+            let txtStock = sinStock ? "SIN STOCK" : (prod.Stock <= 3 ? `Stock: ${prod.Stock} u. (Poco)` : `Stock: ${prod.Stock} u.`);
+           
+            let btnEliminar = this.adminDesbloqueado ? `<button class="btn-eliminar-prod" onclick="miTienda.eliminarProducto(${prod.ID})">Eliminar Producto</button>` : '';
+
+            contProd.innerHTML += `
+                <div class="card">
+                    <div class="card-header"><h3>ID: ${prod.ID} | ${prod.Nombre}</h3></div>
+                    <div>
+                        <p class="precio">$${prod.Precio.toFixed(2)}</p>
+                        <p class="stock ${prod.Stock <= 3 ? 'alerta' : ''}">${txtStock}</p>
+                    </div>
+                    <div class="card-buttons">
+                        <button class="btn-venta" onclick="miTienda.realizarVenta(${prod.ID})" ${sinStock ? 'disabled style="background-color:#ccc;"' : ''}>Vender 1</button>
+                        <button class="btn-reponer" onclick="miTienda.sumarUnidadStock(${prod.ID})">+1</button>
+                    </div>
+                    ${btnEliminar}
+                </div>`;
+        });
+
+        const contVentas = document.getElementById('lista-ventas-hoy');
+        contVentas.innerHTML
 </script>
 </body>
 </html>
