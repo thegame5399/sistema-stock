@@ -11,23 +11,19 @@
             padding: 0;
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
-
         body {
             background-color: #f4f6f9;
             color: #333;
             padding: 20px;
         }
-
         .container {
             max-width: 1200px;
             margin: 0 auto;
         }
-
         h1, h2, h3, h4 {
             margin-bottom: 20px;
             color: #2c3e50;
         }
-
         /* Encabezado modificado para soportar el logo a la derecha */
         header {
             position: relative;
@@ -39,7 +35,6 @@
             justify-content: center;
             align-items: center;
         }
-
         /* Estilos para el Logo */
         .logo-top-right {
             position: absolute;
@@ -51,7 +46,6 @@
             object-fit: contain;
             cursor: pointer;
         }
-
         /* Sistema de Pestañas Principales */
         .tabs {
             display: flex;
@@ -60,7 +54,6 @@
             border-bottom: 2px solid #ddd;
             padding-bottom: 10px;
         }
-
         .tab-button {
             padding: 10px 20px;
             background: #e0e0e0;
@@ -71,27 +64,22 @@
             color: #555;
             transition: all 0.2s;
         }
-
         .tab-button.active {
             background: #3498db;
             color: white;
         }
-
         .tab-content {
             display: none;
         }
-
         .tab-content.active {
             display: block;
         }
-
         /* Layout Principal */
         .main-layout {
             display: grid;
             grid-template-columns: 1fr 2fr;
             gap: 30px;
         }
-
         .panel {
             background: white;
             padding: 20px;
@@ -100,18 +88,15 @@
             height: fit-content;
             margin-bottom: 20px;
         }
-
         .form-group {
             margin-bottom: 15px;
         }
-
         label {
             display: block;
             margin-bottom: 5px;
             font-weight: 600;
             font-size: 14px;
         }
-
         input, select {
             width: 100%;
             padding: 10px;
@@ -120,7 +105,6 @@
             font-size: 16px;
             background-color: white;
         }
-
         button {
             width: 100%;
             padding: 12px;
@@ -132,7 +116,6 @@
             cursor: pointer;
             font-weight: bold;
         }
-
         /* Barra de Vendedor y Buscador */
         .vendedor-global-bar {
             background: #2c3e50;
@@ -145,19 +128,16 @@
             gap: 15px;
             box-shadow: 0 4px 6px rgba(0,0,0,0.1);
         }
-
         .vendedor-global-bar label {
             margin: 0;
             font-size: 16px;
             white-space: nowrap;
         }
-
         .vendedor-global-bar select {
             flex-grow: 1;
             font-weight: bold;
             color: #333;
         }
-
         .buscador-bar {
             margin-bottom: 20px;
         }
@@ -165,14 +145,12 @@
             border: 2px solid #3498db;
             box-shadow: 0 2px 4px rgba(0,0,0,0.1);
         }
-
         /* Lista de vendedores */
         .vendedores-lista {
             margin-top: 15px;
             list-style: none;
             padding: 0;
         }
-
         .vendedores-lista li {
             background: #f8f9fa;
             padding: 8px 12px;
@@ -184,7 +162,6 @@
             justify-content: space-between;
             align-items: center;
         }
-
         .btn-quitar {
             background-color: #e74c3c;
             color: white;
@@ -195,9 +172,7 @@
             font-size: 12px;
             width: auto;
         }
-
         .btn-quitar:hover { background-color: #c0392b; }
-
         /* Tarjetas de Productos */
         .productos-grid {
             display: grid;
@@ -205,7 +180,6 @@
             gap: 20px;
             margin-bottom: 30px;
         }
-
         .card {
             background: white;
             border-radius: 8px;
@@ -216,18 +190,15 @@
             flex-direction: column;
             justify-content: space-between;
         }
-
         .card-header h3 { font-size: 16px; margin-bottom: 5px; }
         .card .precio { font-size: 20px; font-weight: bold; color: #27ae60; margin-bottom: 5px; }
         .card .stock { font-size: 14px; color: #7f8c8d; margin-bottom: 15px; }
         .card .stock.alerta { color: #e74c3c; font-weight: bold; }
-
         .card-buttons { display: flex; gap: 10px; margin-bottom: 10px; }
         .btn-venta { background-color: #2ecc71; flex: 2; }
         .btn-venta:hover { background-color: #27ae60; }
         .btn-reponer { background-color: #f39c12; flex: 1; }
         .btn-reponer:hover { background-color: #d35400; }
-       
         .btn-eliminar-prod {
             background-color: transparent;
             color: #e74c3c;
@@ -237,7 +208,6 @@
             margin-top: 5px;
         }
         .btn-eliminar-prod:hover { background-color: #e74c3c; color: white; }
-
         /* Tablas */
         .tabla-container {
             background: white;
@@ -247,11 +217,9 @@
             overflow-x: auto;
             margin-bottom: 20px;
         }
-
         table { width: 100%; border-collapse: collapse; margin-top: 10px; }
         th, td { padding: 12px; text-align: left; border-bottom: 1px solid #ddd; }
         th { background-color: #f8f9fa; }
-
         /* Estilos de la Pestaña Secciones (Tonalidad Amarilla Suavizada) */
         .seccion-bloque {
             background: white;
@@ -261,7 +229,6 @@
             margin-bottom: 25px;
             border-left: 5px solid #f5dc56;
         }
-
         .seccion-header {
             display: flex;
             justify-content: space-between;
@@ -270,19 +237,16 @@
             border-bottom: 1px solid #eee;
             padding-bottom: 10px;
         }
-
         .seccion-header-acciones {
             display: flex;
             gap: 8px;
         }
-
         .btn-accion-seccion {
             width: auto;
             padding: 6px 12px;
             font-size: 13px;
             background-color: #7f8c8d;
         }
-
         .btn-eliminar-seccion {
             width: auto;
             padding: 6px 12px;
@@ -290,7 +254,6 @@
             background-color: #e74c3c;
         }
         .btn-eliminar-seccion:hover { background-color: #c0392b; }
-
         .producto-fila-seccion {
             display: flex;
             justify-content: space-between;
@@ -298,13 +261,11 @@
             padding: 10px 0;
             border-bottom: 1px dashed #eee;
         }
-
         .select-mover {
             width: auto;
             padding: 5px;
             font-size: 13px;
         }
-
         /* Reportes y Objetivos */
         .top-reportes-grid {
             display: grid;
@@ -312,14 +273,12 @@
             gap: 20px;
             margin-bottom: 25px;
         }
-
         .objetivo-container, .seguridad-container {
             background: white;
             padding: 20px;
             border-radius: 8px;
             box-shadow: 0 4px 6px rgba(0,0,0,0.05);
         }
-
         .progress-bar-bg {
             background-color: #e0e0e0;
             border-radius: 10px;
@@ -329,14 +288,12 @@
             width: 100%;
             overflow: hidden;
         }
-
         .progress-bar-fill {
             background-color: #2ecc71;
             height: 100%;
             width: 0%;
             transition: width 0.4s ease-in-out;
         }
-
         .progress-text {
             position: absolute;
             width: 100%;
@@ -346,7 +303,6 @@
             color: #333;
             font-size: 14px;
         }
-
         /* Estilos Reporte Mensual y Bloqueo */
         .mes-bloque {
             background: white;
@@ -355,7 +311,6 @@
             box-shadow: 0 4px 6px rgba(0,0,0,0.05);
             margin-bottom: 20px;
         }
-
         .mes-titulo-container {
             display: flex;
             justify-content: space-between;
@@ -366,28 +321,23 @@
             border-radius: 4px;
             margin-bottom: 15px;
         }
-
         .mes-titulo {
             text-transform: capitalize;
             font-size: 16px;
             font-weight: bold;
         }
-
         .mes-acciones-admin {
             display: flex;
             gap: 10px;
         }
-
         .btn-admin-mes {
             width: auto;
             padding: 4px 10px;
             font-size: 12px;
             font-weight: normal;
         }
-
         .resumen-financiero { display: flex; gap: 20px; margin-bottom: 15px; font-weight: bold; }
         .resumen-item { padding: 10px; border-radius: 4px; background: #f8f9fa; }
-
         .historial-pasado-container {
             border: 2px dashed #ccc;
             padding: 20px;
@@ -395,19 +345,16 @@
             margin-top: 40px;
             background-color: #fafbfc;
         }
-
         .lock-screen {
             text-align: center;
             padding: 40px 20px;
         }
-
         .lock-screen input {
             max-width: 300px;
             margin: 15px auto;
             text-align: center;
             letter-spacing: 2px;
         }
-
         .meses-lenguetas {
             display: flex;
             gap: 5px;
@@ -416,7 +363,6 @@
             border-bottom: 2px solid #2c3e50;
             padding-bottom: 5px;
         }
-
         .btn-lengueta {
             background-color: #e0e0e0;
             color: #333;
@@ -430,23 +376,19 @@
             font-size: 13px;
             transition: all 0.2s;
         }
-
         .btn-lengueta:hover {
             background-color: #d1d1d1;
         }
-
         .btn-lengueta.activa {
             background-color: #2c3e50;
             color: white;
         }
-
         .msg-bloqueo-inline {
             font-size: 13px;
             color: #7f8c8d;
             font-style: italic;
             margin-bottom: 10px;
         }
-
         /* Estilos de la capa del Easter egg de Imagen */
         .easter-egg-overlay {
             display: none;
@@ -461,7 +403,6 @@
             align-items: center;
             cursor: pointer;
         }
-
         .easter-egg-overlay img {
             max-width: 90%;
             max-height: 90%;
@@ -469,7 +410,6 @@
             box-shadow: 0 0 25px rgba(255, 255, 255, 0.4);
             object-fit: contain;
         }
-
         /* Adaptación para celulares */
         @media (max-width: 768px) {
             .main-layout {
@@ -489,23 +429,19 @@
     </style>
 </head>
 <body>
-
     <div id="easter-egg-imagen-container" class="easter-egg-overlay" onclick="miTienda.ocultarImagenEasterEgg()">
         <img src="IMG_20260603_104447.jpg" alt="Secret Easter Egg">
     </div>
-
     <div class="container">
         <header>
             <h1>Sistema Integrado de Stock e Historial</h1>
             <img src="Logo epg" alt="Logo EPG" class="logo-top-right" onclick="miTienda.registrarClickLogo()">
         </header>
-
         <div class="tabs">
             <button class="tab-button active" onclick="cambiarPestaña('operaciones')">Operaciones y Ventas</button>
             <button class="tab-button" onclick="cambiarPestaña('secciones-stock')">Organizar por Secciones</button>
             <button class="tab-button" onclick="cambiarPestaña('reporte-mensual')">Reporte por Meses</button>
         </div>
-
         <div id="operaciones" class="tab-content active">
             <div class="main-layout">
                 <div>
@@ -521,7 +457,6 @@
                         </form>
                         <ul id="lista-vendedores-ui" class="vendedores-lista"></ul>
                     </div>
-
                     <div class="panel">
                         <h2>Comprar / Registrar Producto</h2>
                         <form id="form-producto">
@@ -534,7 +469,6 @@
                         </form>
                     </div>
                 </div>
-
                 <div>
                     <div class="vendedor-global-bar">
                         <label>Vendedor Actual:</label>
@@ -542,14 +476,11 @@
                             <option value="General">Sin especificar (General)</option>
                         </select>
                     </div>
-
                     <h2>Inventario Disponible</h2>
                     <div class="buscador-bar">
                         <input type="text" id="buscador-productos" placeholder="Buscar producto por Nombre o ID..." oninput="miTienda.actualizarInterfaz()">
                     </div>
-
                     <div id="productos-container" class="productos-grid"></div>
-
                     <h2>Ventas Recientes</h2>
                     <div class="tabla-container">
                         <table>
@@ -569,7 +500,6 @@
                 </div>
             </div>
         </div>
-
         <div id="secciones-stock" class="tab-content">
             <div class="main-layout">
                 <div>
@@ -590,9 +520,7 @@
                 </div>
             </div>
         </div>
-
         <div id="reporte-mensual" class="tab-content">
-           
             <div class="top-reportes-grid">
                 <div class="objetivo-container">
                     <h2>Objetivo de Ventas del Mes Actual</h2>
@@ -606,21 +534,15 @@
                         <div id="progreso-texto" class="progress-text">0%</div>
                     </div>
                 </div>
-
                 <div class="seguridad-container" id="bloque-seguridad"></div>
             </div>
-
             <h2>Resumen Financiero Anual</h2>
-           
             <div id="meses-tabs-container" class="meses-lenguetas"></div>
-           
             <div id="contenedor-mes-seleccionado"></div>
-
         </div>
     </div>
-
-    <script>
-const API = 'https://sistema-stock-0s3o.onrender.com'; // Tu URL de Render
+<script>
+const API = 'https://sistema-stock-0s3o.onrender.com';
 
 function cambiarPestaña(idPestaña) {
     document.querySelectorAll('.tab-content').forEach(tc => tc.classList.remove('active'));
@@ -644,8 +566,8 @@ class Tienda {
         this.secciones = ["General"];
         this.passwordReportes = "1234";
         this.adminDesbloqueado = false;
-        
-        this.cargarDatos(); // Carga desde Mongo al iniciar
+
+        this.cargarDatos();
     }
 
     async cargarDatos() {
@@ -690,22 +612,19 @@ class Tienda {
 
     crearSeccion(nombre) {
         let limpio = nombre.trim();
-        if (limpio && !this.secciones.includes(limpio)) {
+        if (limpio &&!this.secciones.includes(limpio)) {
             this.secciones.push(limpio);
             this.actualizarInterfaz();
         } else alert("La sección ya existe o no es válida.");
     }
 
     editarSeccion(nombreAnterior) {
-        let nuevoNombre = prompt("Introduce el nuevo nombre para la sección:", nombreAnterior);
+        let nuevoNombre = prompt("Nuevo nombre para la sección:", nombreAnterior);
         if (!nuevoNombre) return;
         nuevoNombre = nuevoNombre.trim();
-        if (nuevoNombre && nuevoNombre !== nombreAnterior) {
-            if (this.secciones.includes(nuevoNombre)) {
-                alert("Ya existe una sección con ese nombre.");
-                return;
-            }
-            this.secciones = this.secciones.map(s => s === nombreAnterior ? nuevoNombre : s);
+        if (nuevoNombre && nuevoNombre!== nombreAnterior) {
+            if (this.secciones.includes(nuevoNombre)) return alert("Ya existe una sección con ese nombre.");
+            this.secciones = this.secciones.map(s => s === nombreAnterior? nuevoNombre : s);
             this.inventario.forEach(p => { if (p.seccion === nombreAnterior) p.seccion = nuevoNombre; });
             this.actualizarInterfaz();
         }
@@ -713,15 +632,15 @@ class Tienda {
 
     eliminarSeccion(nombreSeccion) {
         if (nombreSeccion === "General") return alert("La sección 'General' no puede ser eliminada.");
-        if (confirm(`¿Eliminar sección "${nombreSeccion}"? Los productos pasarán a 'General'.`)) {
+        if (confirm(`¿Eliminar sección "${nombreSeccion}"?`)) {
             this.inventario.forEach(p => { if (p.seccion === nombreSeccion) p.seccion = "General"; });
-            this.secciones = this.secciones.filter(s => s !== nombreSeccion);
+            this.secciones = this.secciones.filter(s => s!== nombreSeccion);
             this.actualizarInterfaz();
         }
     }
 
     moverProductoASeccion(idProducto, nuevaSeccion) {
-        let prod = this.inventario.find(p => p.id === idProducto);
+        let prod = this.inventario.find(p => p.ID === idProducto);
         if (prod) {
             prod.seccion = nuevaSeccion;
             this.actualizarInterfaz();
@@ -755,18 +674,17 @@ class Tienda {
 
     agregarVendedor(nombre) {
         let nombreLimpio = nombre.trim();
-        if (nombreLimpio && !this.vendedores.includes(nombreLimpio)) {
+        if (nombreLimpio &&!this.vendedores.includes(nombreLimpio)) {
             this.vendedores.push(nombreLimpio);
             this.actualizarInterfaz();
         }
     }
 
     quitarVendedor(nombre) {
-        this.vendedores = this.vendedores.filter(v => v !== nombre);
+        this.vendedores = this.vendedores.filter(v => v!== nombre);
         this.actualizarInterfaz();
     }
 
-    // GUARDAR EN MONGO DB
     async comprarProducto(id, nombre, precio, costo, cantidad) {
         const producto = {
             ID: Number(id),
@@ -776,20 +694,18 @@ class Tienda {
             Stock: Number(cantidad),
             seccion: "General"
         };
-        
+
         try {
             const res = await fetch(API + '/productos', {
                 method: 'POST',
                 headers: {'Content-Type': 'application/json'},
                 body: JSON.stringify(producto)
             });
-            
+
             if(res.ok) {
-                await this.cargarDatos(); // Recarga desde Mongo
+                await this.cargarDatos();
                 alert('Producto guardado en MongoDB ✅');
-            } else {
-                alert('Error al guardar producto');
-            }
+            } else alert('Error al guardar producto');
         } catch(err) {
             console.error(err);
             alert('Error de conexión con el servidor');
@@ -798,7 +714,7 @@ class Tienda {
 
     async sumarUnidadStock(idProducto) {
         try {
-            const res = await fetch(API + '/productos/sumar', {   
+            const res = await fetch(API + '/productos/sumar', {
                 method: 'POST',
                 headers: {'Content-Type': 'application/json'},
                 body: JSON.stringify({id: idProducto, cantidad: 1})
@@ -809,14 +725,14 @@ class Tienda {
             console.error(err);
             alert('Error de conexión');
         }
-    }
+    } // <- ACÁ FALTABA ESTA LLAVE
 
     async realizarVenta(idProducto) {
-        let producto = this.inventario.find(p => p.id === idProducto || p.ID === idProducto);
+        let producto = this.inventario.find(p => p.ID === idProducto);
         if (!producto || producto.Stock < 1) return alert("Sin stock");
 
         let vendedorSeleccionado = document.getElementById('vendedor-global')?.value || "General";
-        
+
         try {
             await fetch(API + '/ventas', {
                 method: 'POST',
@@ -832,443 +748,304 @@ class Tienda {
 
     eliminarProducto(idProducto) {
         if(confirm("¿Eliminar producto del catálogo?")) {
-            // Tendrías que agregar endpoint DELETE en server.js
             alert('Función pendiente - agregá endpoint DELETE en backend');
         }
     }
-realizarVenta(idProducto) {
-                let producto = this.inventario.find(p => p.id === idProducto);
-                if (!producto || producto.stock < 1) return alert("Sin stock");
-                let vendedorSeleccionado = document.getElementById('vendedor-global') ? document.getElementById('vendedor-global').value : "General";
-                producto.stock -= 1;
-                this.historialVentas.push({
-                    idVenta: this.historialVentas.length + 1, nombre: producto.nombre, cantidad: 1, totalVendido: producto.precio, vendedor: vendedorSeleccionado, fecha: new Date()
-                });
-                this.actualizarInterfaz();
-                if (producto.stock === 0) setTimeout(() => alert(`Atencion El producto ${producto.nombre} se quedó sin stock.`), 100);
-            }
-            // Inserciones manuales en meses pasados o actuales
-            agregarCompraManual(claveMes) {
-                const nombre = document.getElementById('manual-compra-nombre').value.trim();
-                const cantidad = Number(document.getElementById('manual-compra-cantidad').value);
-                const total = Number(document.getElementById('manual-compra-total').value);
-                if (!nombre || cantidad <= 0 || total < 0) {
-                    alert("Complete todos los campos con valores correctos.");
-                    return;
-                }
-                let partes = claveMes.split(" de ");
-                let mesNombre = partes[0];
-                let año = Number(partes[1]);
-                let mesIndex = this.listaNombresMeses.indexOf(mesNombre);
-                let fechaFicticia = new Date(año, mesIndex, 15);
-                this.historialCompras.push({
-                    nombre: nombre,
-                    shadow: cantidad,
-                    cantidad: cantidad,
-                    totalInvertido: total,
-                    fecha: fechaFicticia
-                });
-                this.actualizarInterfaz();
-            }
-            agregarVentaManual(claveMes) {
-                const nombre = document.getElementById('manual-venta-nombre').value.trim();
-                const vended = document.getElementById('manual-venta-vendedor').value.trim() || "General";
-                const cantidad = Number(document.getElementById('manual-venta-cantidad').value);
-                const total = Number(document.getElementById('manual-venta-total').value);
-                if (!nombre || cantidad <= 0 || total < 0) {
-                    alert("Complete todos los campos con valores correctos.");
-                    return;
-                }
-                let partes = claveMes.split(" de ");
-                let mesNombre = partes[0];
-                let año = Number(partes[1]);
-                let mesIndex = this.listaNombresMeses.indexOf(mesNombre);
-                let fechaFicticia = new Date(año, mesIndex, 15);
-                this.historialVentas.push({
-                    idVenta: this.historialVentas.length + 1,
-                    nombre: nombre,
-                    vendedor: vended,
-                    shadow: cantidad,
-                    cantidad: quantity = cantidad,
-                    totalVendido: total,
-                    fecha: fechaFicticia
-                });
-                this.actualizarInterfaz();
-            }
-            limpiarMesEspecifico(claveMes) {
-                if(confirm(`¿Estás seguro de limpiar todos los registros guardados en el sistema de "${claveMes}"?`)) {
-                    this.historialVentas = this.historialVentas.filter(v => v.fecha.toLocaleString('es-ES', { month: 'long', year: 'numeric' }) !== claveMes);
-                    this.historialCompras = this.historialCompras.filter(c => c.fecha.toLocaleString('es-ES', { month: 'long', year: 'numeric' }) !== claveMes);
-                    delete this.ajustesManualesMeses[claveMes];
-                    this.actualizarInterfaz();
-                }
-            }
-            editarBalanceManual(claveMes, totalVendidoActual, totalInvertidoActual) {
-                let nuevoVendido = prompt(`Modificar total vendido para [${claveMes}]:`, totalVendidoActual);
-                if(nuevoVendido === null) return;
-                let nuevoInvertido = prompt(`Modificar total invertido para [${claveMes}]:`, totalInvertidoActual);
-                if(nuevoInvertido === null) return;
-                this.ajustesManualesMeses[claveMes] = {
-                    vendido: Number(nuevoVendido) || 0,
-                    invertido: Number(nuevoInvertido) || 0,
-                    manuales: true
-                };
-                this.actualizarInterfaz();
-            }
-            actualizarInterfaz() {
-                // Filtro visual de Gestión de Personal según Modo Admin
-                const formVendedor = document.getElementById('form-vendedor');
-                const msgPersonal = document.getElementById('msg-personal-bloqueado');
-                if (this.adminDesbloqueado) {
-                    formVendedor.style.display = 'block';
-                    msgPersonal.style.display = 'none';
-                } else {
-                    formVendedor.style.display = 'none';
-                    msgPersonal.style.display = 'block';
-                }
-                // UI Vendedores
-                const contVend = document.getElementById('lista-vendedores-ui');
-                contVend.innerHTML = '';
-                this.vendedores.forEach(v => {
-                    let btnQuitar = this.adminDesbloqueado ? `<button class="btn-quitar" onclick="miTienda.quitarVendedor('${v}')">Eliminar</button>` : '';
-                    contVend.innerHTML += `<li><span>${v}</span> ${btnQuitar}</li>`;
-                });
-                // Selector Global de Vendedores
-                const selectorGlobal = document.getElementById('vendedor-global');
-                const seleccionPrevia = selectorGlobal.value;
-                selectorGlobal.innerHTML = `<option value="General">Sin especificar (General)</option>` + this.vendedores.map(v => `<option value="${v}">${v}</option>`).join('');
-                selectorGlobal.value = this.vendedores.includes(seleccionPrevia) ? seleccionPrevia : "General";
-                // Filtro visual de Ajuste del Objetivo Mensual según Modo Admin
-                const configObjetivo = document.getElementById('config-objetivo-container');
-                if (configObjetivo) {
-                    configObjetivo.style.display = this.adminDesbloqueado ? 'flex' : 'none';
-                }
-                // Buscador y Render Productos
-                const filtro = document.getElementById('buscador-productos') ? document.getElementById('buscador-productos').value.toLowerCase() : "";
-                this.inventario.sort((a, b) => a.nombre.localeCompare(b.nombre));
-                let invMostrar = this.inventario.filter(p => p.nombre.toLowerCase().includes(filtro) || p.id.toString().includes(filtro));
-                const contProd = document.getElementById('productos-container');
-                contProd.innerHTML = invMostrar.length === 0 ? '<p>No se encontraron productos.</p>' : '';
-                invMostrar.forEach(prod => {
-                    const sinStock = prod.stock === 0;
-                    let txtStock = sinStock ? "SIN STOCK" : (prod.stock <= 3 ? `Stock: ${prod.stock} u. (Poco)` : `Stock: ${prod.stock} u.`);
-                    let btnEliminar = this.adminDesbloqueado ? `<button class="btn-eliminar-prod" onclick="miTienda.eliminarProducto(${prod.id})">Eliminar Producto</button>` : '';
-                    contProd.innerHTML += `
-                        <div class="card">
-                            <div class="card-header"><h3>ID: ${prod.id} | ${prod.nombre}</h3></div>
+
+    actualizarInterfaz() {
+        const formVendedor = document.getElementById('form-vendedor');
+        const msgPersonal = document.getElementById('msg-personal-bloqueado');
+        if (this.adminDesbloqueado) {
+            formVendedor.style.display = 'block';
+            msgPersonal.style.display = 'none';
+        } else {
+            formVendedor.style.display = 'none';
+            msgPersonal.style.display = 'block';
+        }
+
+        const contVend = document.getElementById('lista-vendedores-ui');
+        contVend.innerHTML = '';
+        this.vendedores.forEach(v => {
+            let btnQuitar = this.adminDesbloqueado? `<button class="btn-quitar" onclick="miTienda.quitarVendedor('${v}')">Eliminar</button>` : '';
+            contVend.innerHTML += `<li><span>${v}</span> ${btnQuitar}</li>`;
+        });
+
+        const selectorGlobal = document.getElementById('vendedor-global');
+        const seleccionPrevia = selectorGlobal.value;
+        selectorGlobal.innerHTML = `<option value="General">Sin especificar (General)</option>` + this.vendedores.map(v => `<option value="${v}">${v}</option>`).join('');
+        selectorGlobal.value = this.vendedores.includes(seleccionPrevia)? seleccionPrevia : "General";
+
+        const configObjetivo = document.getElementById('config-objetivo-container');
+        if (configObjetivo) {
+            configObjetivo.style.display = this.adminDesbloqueado? 'flex' : 'none';
+        }
+
+        const filtro = document.getElementById('buscador-productos')? document.getElementById('buscador-productos').value.toLowerCase() : "";
+        this.inventario.sort((a, b) => a.Nombre.localeCompare(b.Nombre));
+
+        let invMostrar = this.inventario.filter(p => p.Nombre.toLowerCase().includes(filtro) || p.ID.toString().includes(filtro));
+        const contProd = document.getElementById('productos-container');
+        contProd.innerHTML = invMostrar.length === 0? '<p>No se encontraron productos.</p>' : '';
+
+        invMostrar.forEach(prod => {
+            const sinStock = prod.Stock === 0;
+            let txtStock = sinStock? "SIN STOCK" : (prod.Stock <= 3? `Stock: ${prod.Stock} u. (Poco)` : `Stock: ${prod.Stock} u.`);
+
+            let btnEliminar = this.adminDesbloqueado? `<button class="btn-eliminar-prod" onclick="miTienda.eliminarProducto(${prod.ID})">Eliminar Producto</button>` : '';
+
+            contProd.innerHTML += `
+                <div class="card">
+                    <div class="card-header"><h3>ID: ${prod.ID} | ${prod.Nombre}</h3></div>
+                    <div>
+                        <p class="precio">$${prod.Precio.toFixed(2)}</p>
+                        <p class="stock ${prod.Stock <= 3? 'alerta' : ''}">${txtStock}</p>
+                    </div>
+                    <div class="card-buttons">
+                        <button class="btn-venta" onclick="miTienda.realizarVenta(${prod.ID})" ${sinStock? 'disabled style="background-color:#ccc;"' : ''}>Vender 1</button>
+                        <button class="btn-reponer" onclick="miTienda.sumarUnidadStock(${prod.ID})">+1</button>
+                    </div>
+                    ${btnEliminar}
+                </div>`;
+        });
+
+        const contVentas = document.getElementById('lista-ventas-hoy');
+        contVentas.innerHTML = '';
+        this.historialVentas.slice(-5).reverse().forEach(v => {
+            let fechaFormateada = v.fecha.toLocaleDateString() + ' - ' + v.fecha.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+            contVentas.innerHTML += `<tr><td>#${v.idVenta}</td><td>${v.nombre}</td><td>${v.cantidad}</td><td>$${v.totalVendido.toFixed(2)}</td><td><strong>${v.vendedor}</strong></td><td><small>${fechaFormateada}</small></td></tr>`;
+        });
+
+        const contSecciones = document.getElementById('contenedor-secciones-dinamicas');
+        if (contSecciones) {
+            contSecciones.innerHTML = '';
+            this.secciones.forEach(sec => {
+                let prodsDeSec = this.inventario.filter(p => (p.seccion || "General") === sec);
+
+                let filasProductos = prodsDeSec.map(p => {
+                    let opcionesSelect = this.secciones.map(s =>
+                        `<option value="${s}" ${s === sec? 'selected' : ''}>${s}</option>`
+                    ).join('');
+
+                    return `
+                        <div class="producto-fila-seccion">
+                            <span><strong>ID: ${p.ID}</strong> - ${p.Nombre} (Stock: ${p.Stock} u.)</span>
                             <div>
-                                <p class="precio">$${prod.precio.toFixed(2)}</p>
-                                <p class="stock ${prod.stock <= 3 ? 'alerta' : ''}">${txtStock}</p>
+                                <label style="display:inline; font-size:12px; margin-right:5px;">Mover a:</label>
+                                <select class="select-mover" onchange="miTienda.moverProductoASeccion(${p.ID}, this.value)">
+                                    ${opcionesSelect}
+                                </select>
                             </div>
-                            <div class="card-buttons">
-                                <button class="btn-venta" onclick="miTienda.realizarVenta(${prod.id})" ${sinStock ? 'disabled style="background-color:#ccc;"' : ''}>Vender 1</button>
-                                <button class="btn-reponer" onclick="miTienda.sumarUnidadStock(${prod.id})">+1</button>
-                            </div>
-                            ${btnEliminar}
                         </div>`;
-                });
-                // Ventas Recientes
-                const contVentas = document.getElementById('lista-ventas-hoy');
-                contVentas.innerHTML = '';
-                this.historialVentas.slice(-5).reverse().forEach(v => {
-                    let fechaFormateada = v.fecha.toLocaleDateString() + ' - ' + v.fecha.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
-                    contVentas.innerHTML += `<tr><td>#${v.idVenta}</td><td>${v.nombre}</td><td>${v.cantidad}</td><td>$${v.totalVendido.toFixed(2)}</td><td><strong>${v.vendedor}</strong></td><td><small>${fechaFormateada}</small></td></tr>`;
-                });
-                // Renderizar Pestaña Secciones
-                const contSecciones = document.getElementById('contenedor-secciones-dinamicas');
-                if (contSecciones) {
-                    contSecciones.innerHTML = '';
-                    this.secciones.forEach(sec => {
-                        let prodsDeSec = this.inventario.filter(p => (p.seccion || "General") === sec);
-                        let filasProductos = prodsDeSec.map(p => {
-                            let opcionesSelect = this.secciones.map(s =>
-                                `<option value="${s}" ${s === sec ? 'selected' : ''}>${s}</option>`
-                            ).join('');
-                            return `
-                                <div class="producto-fila-seccion">
-                                    <span><strong>ID: ${p.id}</strong> - ${p.nombre} (Stock: ${p.stock} u.)</span>
-                                    <div>
-                                        <label style="display:inline; font-size:12px; margin-right:5px;">Mover a:</label>
-                                        <select class="select-mover" onchange="miTienda.moverProductoASeccion(${p.id}, this.value)">
-                                            ${opcionesSelect}
-                                        </select>
-                                    </div>
-                                </div>`;
-                        }).join('');
-                        let botonesAccion = '';
-                        if(sec !== "General") {
-                            botonesAccion = `
-                                <div class="seccion-header-acciones">
-                                    <button class="btn-accion-seccion" onclick="miTienda.editarSeccion('${sec}')">Cambiar Nombre</button>
-                                    <button class="btn-eliminar-seccion" onclick="miTienda.eliminarSeccion('${sec}')">Eliminar Sección</button>
-                                </div>
-                            `;
-                        }
-                        contSecciones.innerHTML += `
-                            <div class="seccion-bloque">
-                                <div class="seccion-header">
-                                    <h3>${sec} (${prodsDeSec.length} productos)</h3>
-                                    ${botonesAccion}
-                                </div>
-                                <div>
-                                    ${filasProductos || '<p style="color:#7f8c8d; font-size:14px;">No hay productos asignados a esta sección.</p>'}
-                                </div>
-                            </div>`;
-                    });
-                }
-                // Renderizar Dinámico de Panel Seguridad
-                const bloqueSeguridad = document.getElementById('bloque-seguridad');
-                if (bloqueSeguridad) {
-                    if (!this.adminDesbloqueado) {
-                        bloqueSeguridad.innerHTML = `
-                            <h2>Panel de Administración</h2>
-                            <p style="font-size: 12px; color: #7f8c8d; margin-bottom: 10px;">Las opciones de configuración avanzada, metas y personal están bloqueadas.</p>
-                            <input type="password" id="input-admin-pass" placeholder="Contraseña de Administrador">
-                            <button onclick="miTienda.intentarDesbloquear(document.getElementById('input-admin-pass').value)" style="background-color: #2c3e50; margin-top: 10px;">Desbloquear Funciones</button>
-                        `;
-                    } else {
-                        bloqueSeguridad.innerHTML = `
-                            <h2>Seguridad y Privacidad</h2>
-                            <p style="font-size: 12px; color: #7f8c8d; margin-bottom: 10px;">Modo Admin Activo. Modifica la contraseña si lo deseas:</p>
-                            <input type="password" id="input-nueva-pass" placeholder="Nueva contraseña">
-                            <button onclick="miTienda.cambiarPassword()" style="background-color: #34495e; margin-top: 10px; margin-bottom: 12px;">Cambiar Contraseña</button>
-                            <hr style="margin: 15px 0; border: 0; border-top: 1px solid #eee;">
-                            <button onclick="miTienda.bloquearAdmin()" style="background-color: #e74c3c;">Cerrar Sesión Administrador</button>
-                        `;
-                    }
-                }
-                this.generarSeccionMesesAnual();
-            }
-            generarHTMLBloqueMes(mesTituloBonito, claveAgrupacion, datosMes) {
-                let totalVendido = datosMes.ventas.reduce((s, v) => s + v.totalVendido, 0);
-                let totalInvertido = datosMes.compras.reduce((s, c) => s + c.totalInvertido, 0);
-                if(this.ajustesManualesMeses[claveAgrupacion]) {
-                    totalVendido = this.ajustesManualesMeses[claveAgrupacion].vendido;
-                    totalInvertido = this.ajustesManualesMeses[claveAgrupacion].invertido;
-                }
-                let balance = totalVendido - totalInvertido;
-                let filasCompras = datosMes.compras.map(c => `<tr><td>${c.nombre}</td><td>${c.cantidad}</td><td>$${c.totalInvertido.toFixed(2)}</td></tr>`).join('');
-                let filasVentas = datosMes.ventas.map(v => `<tr><td>${v.nombre}</td><td>${v.vendedor}</td><td>${v.cantidad}</td><td>$${v.totalVendido.toFixed(2)}</td></tr>`).join('');
-                let controlesAdminMes = '';
-                let formularioManual = '';
-                if(this.adminDesbloqueado) {
-                    controlesAdminMes = `
-                        <div class="mes-acciones-admin">
-                            <button class="btn-admin-mes" style="background-color:#e67e22;" onclick="miTienda.editarBalanceManual('${claveAgrupacion}', ${totalVendido}, ${totalInvertido})">Editar Balance</button>
-                            <button class="btn-admin-mes" style="background-color:#e74c3c;" onclick="miTienda.limpiarMesEspecifico('${claveAgrupacion}')">Limpiar Mes</button>
-                        </div>
-                    `;
-                    // Formulario de edición manual exclusivo para administradores
-                    formularioManual = `
-                        <div style="background: #f8f9fa; border: 1px solid #ddd; padding: 15px; border-radius: 6px; margin-top: 20px; display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
-                            <div>
-                                <h4 style="margin-bottom:10px; font-size:14px; color:#2c3e50;">Agregar Entrada Manual (Compra / Historial)</h4>
-                                <div class="form-group" style="margin-bottom: 8px;">
-                                    <label style="font-size:12px; margin-bottom:2px;">Nombre del Producto</label>
-                                    <input type="text" id="manual-compra-nombre" placeholder="Ej: Cables, Martillos" style="padding:6px; font-size:14px;">
-                                </div>
-                                <div class="form-group" style="margin-bottom: 8px;">
-                                    <label style="font-size:12px; margin-bottom:2px;">Cantidad</label>
-                                    <input type="number" id="manual-compra-cantidad" placeholder="Cantidad u." style="padding:6px; font-size:14px;">
-                                </div>
-                                <div class="form-group" style="margin-bottom: 8px;">
-                                    <label style="font-size:12px; margin-bottom:2px;">Costo Total ($)</label>
-                                    <input type="number" id="manual-compra-total" step="0.01" placeholder="Monto total" style="padding:6px; font-size:14px;">
-                                </div>
-                                <button type="button" onclick="miTienda.agregarCompraManual('${claveAgrupacion}')" style="padding:8px; font-size:14px; background-color: #3498db; width:auto; display:inline-block;">Guardar Entrada</button>
-                            </div>
-                            <div>
-                                <h4 style="margin-bottom:10px; font-size:14px; color:#2c3e50;">Agregar Salida Manual (Venta / Historial)</h4>
-                                <div class="form-group" style="margin-bottom: 8px;">
-                                    <label style="font-size:12px; margin-bottom:2px;">Nombre del Producto</label>
-                                    <input type="text" id="manual-venta-nombre" placeholder="Ej: Tornillos, Discos" style="padding:6px; font-size:14px;">
-                                </div>
-                                <div class="form-group" style="margin-bottom: 8px;">
-                                    <label style="font-size:12px; margin-bottom:2px;">Vendedor</label>
-                                    <input type="text" id="manual-venta-vendedor" value="General" style="padding:6px; font-size:14px;">
-                                </div>
-                                <div class="form-group" style="margin-bottom: 8px;">
-                                    <label style="font-size:12px; margin-bottom:2px;">Cantidad</label>
-                                    <input type="number" id="manual-venta-cantidad" placeholder="Cantidad u." style="padding:6px; font-size:14px;">
-                                </div>
-                                <div class="form-group" style="margin-bottom: 8px;">
-                                    <label style="font-size:12px; margin-bottom:2px;">Precio Total ($)</label>
-                                    <input type="number" id="manual-venta-total" step="0.01" placeholder="Monto total" style="padding:6px; font-size:14px;">
-                                </div>
-                                <button type="button" onclick="miTienda.agregarVentaManual('${claveAgrupacion}')" style="padding:8px; font-size:14px; background-color: #2ecc71; width:auto; display:inline-block;">Guardar Salida</button>
-                            </div>
+                }).join('');
+
+                let botonesAccion = '';
+                if(sec!== "General") {
+                    botonesAccion = `
+                        <div class="seccion-header-acciones">
+                            <button class="btn-accion-seccion" onclick="miTienda.editarSeccion('${sec}')">Cambiar Nombre</button>
+                            <button class="btn-eliminar-seccion" onclick="miTienda.eliminarSeccion('${sec}')">Eliminar Sección</button>
                         </div>
                     `;
                 }
-                return `
-                    <div class="mes-bloque">
-                        <div class="mes-titulo-container">
-                            <span class="mes-titulo">${mesTituloBonito}</span>
-                            ${controlesAdminMes}
+
+                contSecciones.innerHTML += `
+                    <div class="seccion-bloque">
+                        <div class="seccion-header">
+                            <h3>${sec} (${prodsDeSec.length} productos)</h3>
+                            ${botonesAccion}
                         </div>
-                        <div class="resumen-financiero">
-                            <div class="resumen-item" style="color: #27ae60;">Vendido: $${totalVendido.toFixed(2)}</div>
-                            <div class="resumen-item" style="color: #e67e22;">Invertido: $${totalInvertido.toFixed(2)}</div>
-                            <div class="resumen-item" style="color: ${balance >= 0 ? '#27ae60' : '#e74c3c'};">Balance: $${balance.toFixed(2)}</div>
+                        <div>
+                            ${filasProductos || '<p style="color:#7f8c8d; font-size:14px;">No hay productos asignados a esta sección.</p>'}
                         </div>
-                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
-                            <div>
-                                <h4>Compras (Entradas)</h4>
-                                <table><thead><tr><th>Producto</th><th>Cant.</th><th>Costo Total</th></tr></thead><tbody>${filasCompras || '<tr><td colspan="3" style="color:#aaa; font-style:italic;">Sin registros en este mes</td></tr>'}</tbody></table>
-                            </div>
-                            <div>
-                                <h4>Ventas (Salidas)</h4>
-                                <table><thead><tr><th>Producto</th><th>Vendedor</th><th>Cant.</th><th>Total</th></tr></thead><tbody>${filasVentas || '<tr><td colspan="4" style="color:#aaa; font-style:italic;">Sin registros en este mes</td></tr>'}</tbody></table>
-                            </div>
-                        </div>
-                        ${formularioManual}
                     </div>`;
-            }
-            generarSeccionMesesAnual() {
-                const tabsContainer = document.getElementById('meses-tabs-container');
-                const contentContainer = document.getElementById('contenedor-mes-seleccionado');
-                if(!tabsContainer || !contentContainer) return;
-                let mesesData = {};
-                const fechaHoy = new Date();
-                const añoActual = fechaHoy.getFullYear();
-                const mesActualLargo = fechaHoy.toLocaleString('es-ES', { month: 'long' });
-                const mesActualClaveCompleta = `${mesActualLargo} de ${añoActual}`;
-                // Agrupar Ventas
-                this.historialVentas.forEach(v => {
-                    let m = v.fecha.toLocaleString('es-ES', { month: 'long', year: 'numeric' });
-                    if (!mesesData[m]) mesesData[m] = { ventas: [], compras: [] };
-                    mesesData[m].ventas.push(v);
-                });
-                // Agrupar Compras
-                this.historialCompras.forEach(c => {
-                    let m = c.fecha.toLocaleString('es-ES', { month: 'long', year: 'numeric' });
-                    if (!mesesData[m]) mesesData[m] = { ventas: [], compras: [] };
-                    mesesData[m].compras.push(c);
-                });
-                // Barra de progreso del mes en curso
-                let datosMesActualEnCurso = mesesData[mesActualClaveCompleta] || { ventas: [], compras: [] };
-                let totalVendidoActual = datosMesActualEnCurso.ventas.reduce((s, v) => s + v.totalVendido, 0);
-                if(this.ajustesManualesMeses[mesActualClaveCompleta]) {
-                    totalVendidoActual = this.ajustesManualesMeses[mesActualClaveCompleta].vendido;
-                }
-                let porcentaje = this.objetivoMensual > 0 ? Math.min((totalVendidoActual / this.objetivoMensual) * 100, 100) : 0;
-                document.getElementById('progreso-barra').style.width = `${porcentaje}%`;
-                document.getElementById('progreso-texto').innerText = `${porcentaje.toFixed(1)}%`;
-                document.getElementById('objetivo-status-text').innerText = `Progreso (${mesActualClaveCompleta}): $${totalVendidoActual.toFixed(2)} / $${this.objetivoMensual.toFixed(2)}`;
-                // Renderizar la botonera de Pestañas de los 12 meses
-                let htmlTabs = '';
-                this.listaNombresMeses.forEach(mesNombre => {
-                    let esActiva = (mesNombre === this.mesReporteSeleccionado) ? 'activa' : '';
-                    htmlTabs += `<button type="button" class="btn-lengueta ${esActiva}" onclick="miTienda.seleccionarMesReporte('${mesNombre}')">${mesNombre}</button>`;
-                });
-                tabsContainer.innerHTML = htmlTabs;
-                // Renderizar únicamente el contenido del mes seleccionado actualmente
-                let claveBusquedaMes = `${this.mesReporteSeleccionado} de ${añoActual}`;
-                let datosDeEsteMes = mesesData[claveBusquedaMes] || { ventas: [], compras: [] };
-                let tagIndicadorExtra = '';
-                if(claveBusquedaMes === mesActualClaveCompleta) {
-                    tagIndicadorExtra = ' (Mes en Curso)';
-                }
-                contentContainer.innerHTML = this.generarHTMLBloqueMes(
-                    `${this.mesReporteSeleccionado.toUpperCase()} ${añoActual}${tagIndicadorExtra}`,
-                    claveBusquedaMes,
-                    datosDeEsteMes
-                );
+            });
+        }
+
+        const bloqueSeguridad = document.getElementById('bloque-seguridad');
+        if (bloqueSeguridad) {
+            if (!this.adminDesbloqueado) {
+                bloqueSeguridad.innerHTML = `
+                    <h2>Panel de Administración</h2>
+                    <p style="font-size: 12px; color: #7f8c8d; margin-bottom: 10px;">Las opciones están bloqueadas.</p>
+                    <input type="password" id="input-admin-pass" placeholder="Contraseña de Administrador">
+                    <button onclick="miTienda.intentarDesbloquear(document.getElementById('input-admin-pass').value)" style="background-color: #2c3e50; margin-top: 10px;">Desbloquear Funciones</button>
+                `;
+            } else {
+                bloqueSeguridad.innerHTML = `
+                    <h2>Seguridad y Privacidad</h2>
+                    <p style="font-size: 12px; color: #7f8c8d; margin-bottom: 10px;">Modo Admin Activo:</p>
+                    <input type="password" id="input-nueva-pass" placeholder="Nueva contraseña">
+                    <button onclick="miTienda.cambiarPassword()" style="background-color: #34495e; margin-top: 10px; margin-bottom: 12px;">Cambiar Contraseña</button>
+                    <hr style="margin: 15px 0; border: 0; border-top: 1px solid #eee;">
+                    <button onclick="miTienda.bloquearAdmin()" style="background-color: #e74c3c;">Cerrar Sesión Administrador</button>
+                `;
             }
         }
-        const miTienda = new Tienda();
-        // Registro ficticio para simular un mes anterior en el año vigente
-        let fechaPasadaPrueba = new Date();
-        fechaPasadaPrueba.setMonth(fechaPasadaPrueba.getMonth() - 1);
-        miTienda.historialVentas.push({ idVenta: 999, nombre: "Venta Antigua de Prueba", cantidad: 1, totalVendido: 100, vendedor: "Administrador", fecha: fechaPasadaPrueba });
-        miTienda.historialCompras.push({ nombre: "Compra Antigua de Prueba", cantidad: 1, totalInvertido: 50, fecha: fechaPasadaPrueba });
-        // Listeners de Formularios
-        document.getElementById('form-producto').addEventListener('submit', function(e) {
-            e.preventDefault();
-            miTienda.comprarProducto(
-                document.getElementById('prod-id').value,
-                document.getElementById('prod-nombre').value,
-                document.getElementById('prod-precio').value,
-                document.getElementById('prod-costo').value,
-                document.getElementById('prod-cantidad').value
-            );
-            this.reset();
+
+        this.generarSeccionMesesAnual();
+    }
+
+    generarHTMLBloqueMes(mesTituloBonito, claveAgrupacion, datosMes) {
+        let totalVendido = datosMes.ventas.reduce((s, v) => s + v.totalVendido, 0);
+        let totalInvertido = datosMes.compras.reduce((s, c) => s + c.totalInvertido, 0);
+        if(this.ajustesManualesMeses[claveAgrupacion]) {
+            totalVendido = this.ajustesManualesMeses[claveAgrupacion].vendido;
+            totalInvertido = this.ajustesManualesMeses[claveAgrupacion].invertido;
+        }
+        let balance = totalVendido - totalInvertido;
+
+        let filasCompras = datosMes.compras.map(c => `<tr><td>${c.nombre}</td><td>${c.cantidad}</td><td>$${c.totalInvertido.toFixed(2)}</td></tr>`).join('');
+        let filasVentas = datosMes.ventas.map(v => `<tr><td>${v.nombre}</td><td>${v.vendedor}</td><td>${v.cantidad}</td><td>$${v.totalVendido.toFixed(2)}</td></tr>`).join('');
+
+        let controlesAdminMes = '';
+        let formularioManual = '';
+
+        if(this.adminDesbloqueado) {
+            controlesAdminMes = `
+                <div class="mes-acciones-admin">
+                    <button class="btn-admin-mes" style="background-color:#e67e22;" onclick="miTienda.editarBalanceManual('${claveAgrupacion}', ${totalVendido}, ${totalInvertido})">Editar Balance</button>
+                    <button class="btn-admin-mes" style="background-color:#e74c3c;" onclick="miTienda.limpiarMesEspecifico('${claveAgrupacion}')">Limpiar Mes</button>
+                </div>
+            `;
+            formularioManual = `
+                <div style="background: #f8f9fa; border: 1px solid #ddd; padding: 15px; border-radius: 6px; margin-top: 20px; display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+                    <div>
+                        <h4>Agregar Compra Manual</h4>
+                        <input type="text" id="manual-compra-nombre" placeholder="Producto">
+                        <input type="number" id="manual-compra-cantidad" placeholder="Cantidad">
+                        <input type="number" id="manual-compra-total" step="0.01" placeholder="Costo Total">
+                        <button type="button" onclick="miTienda.agregarCompraManual('${claveAgrupacion}')">Guardar</button>
+                    </div>
+                    <div>
+                        <h4>Agregar Venta Manual</h4>
+                        <input type="text" id="manual-venta-nombre" placeholder="Producto">
+                        <input type="text" id="manual-venta-vendedor" value="General">
+                        <input type="number" id="manual-venta-cantidad" placeholder="Cantidad">
+                        <input type="number" id="manual-venta-total" step="0.01" placeholder="Total">
+                        <button type="button" onclick="miTienda.agregarVentaManual('${claveAgrupacion}')">Guardar</button>
+                    </div>
+                </div>
+            `;
+        }
+
+        return `
+            <div class="mes-bloque">
+                <div class="mes-titulo-container">
+                    <span class="mes-titulo">${mesTituloBonito}</span>
+                    ${controlesAdminMes}
+                </div>
+                <div class="resumen-financiero">
+                    <div class="resumen-item" style="color: #27ae60;">Vendido: $${totalVendido.toFixed(2)}</div>
+                    <div class="resumen-item" style="color: #e67e22;">Invertido: $${totalInvertido.toFixed(2)}</div>
+                    <div class="resumen-item" style="color: ${balance >= 0? '#27ae60' : '#e74c3c'};">Balance: $${balance.toFixed(2)}</div>
+                </div>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+                    <div><h4>Compras</h4><table><thead><tr><th>Producto</th><th>Cant.</th><th>Costo</th></tr></thead><tbody>${filasCompras || '<tr><td colspan="3">Sin registros</td></tr>'}</tbody></table></div>
+                    <div><h4>Ventas</h4><table><thead><tr><th>Producto</th><th>Vendedor</th><th>Cant.</th><th>Total</th></tr></thead><tbody>${filasVentas || '<tr><td colspan="4">Sin registros</td></tr>'}</tbody></table></div>
+                </div>
+                ${formularioManual}
+            </div>`;
+    }
+
+    generarSeccionMesesAnual() {
+        const tabsContainer = document.getElementById('meses-tabs-container');
+        const contentContainer = document.getElementById('contenedor-mes-seleccionado');
+        if(!tabsContainer ||!contentContainer) return;
+
+        let mesesData = {};
+        const fechaHoy = new Date();
+        const añoActual = fechaHoy.getFullYear();
+        const mesActualLargo = fechaHoy.toLocaleString('es-ES', { month: 'long' });
+        const mesActualClaveCompleta = `${mesActualLargo} de ${añoActual}`;
+
+        this.historialVentas.forEach(v => {
+            let m = v.fecha.toLocaleString('es-ES', { month: 'long', year: 'numeric' });
+            if (!mesesData[m]) mesesData[m] = { ventas: [], compras: [] };
+            mesesData[m].ventas.push(v);
         });
-        document.getElementById('form-vendedor').addEventListener('submit', function(e) {
-            e.preventDefault();
-            const campoNombre = document.getElementById('vend-nombre');
-            miTienda.agregarVendedor(campoNombre.value);
-            campoNombre.value = '';
+
+        this.historialCompras.forEach(c => {
+            let m = c.fecha.toLocaleString('es-ES', { month: 'long', year: 'numeric' });
+            if (!mesesData[m]) mesesData[m] = { ventas: [], compras: [] };
+            mesesData[m].compras.push(c);
         });
-        document.getElementById('form-seccion').addEventListener('submit', function(e) {
-            e.preventDefault();
-            const campoSeccion = document.getElementById('seccion-nombre');
-            miTienda.crearSeccion(campoSeccion.value);
-            campoSeccion.value = '';
+
+        let datosMesActualEnCurso = mesesData[mesActualClaveCompleta] || { ventas: [], compras: [] };
+        let totalVendidoActual = datosMesActualEnCurso.ventas.reduce((s, v) => s + v.totalVendido, 0);
+        if(this.ajustesManualesMeses[mesActualClaveCompleta]) {
+            totalVendidoActual = this.ajustesManualesMeses[mesActualClaveCompleta].vendido;
+        }
+
+        let porcentaje = this.objetivoMensual > 0? Math.min((totalVendidoActual / this.objetivoMensual) * 100, 100) : 0;
+        document.getElementById('progreso-barra').style.width = `${porcentaje}%`;
+        document.getElementById('progreso-texto').innerText = `${porcentaje.toFixed(1)}%`;
+        document.getElementById('objetivo-status-text').innerText = `Progreso (${mesActualClaveCompleta}): $${totalVendidoActual.toFixed(2)} / $${this.objetivoMensual.toFixed(2)}`;
+
+        let htmlTabs = '';
+        this.listaNombresMeses.forEach(mesNombre => {
+            let esActiva = (mesNombre === this.mesReporteSeleccionado)? 'activa' : '';
+            htmlTabs += `<button type="button" class="btn-lengueta ${esActiva}" onclick="miTienda.seleccionarMesReporte('${mesNombre}')">${mesNombre}</button>`;
         });
-        miTienda.actualizarInterfaz();
-const API = 'https://sistema-stock-0s3o.onrender.com'; //
-document.getElementByID('form-producto').onsubmit = async (e) => {e.preventDefault();B
-// CARGAR PRODUCTOS AL INICIAR
-async function cargarProductos() {
-  const res = await fetch(API + '/productos');
-  const productos = await res.json();
-  const contenedor = document.getElementById('inventario');
-  contenedor.innerHTML = '';
-  productos.forEach(p => {
-    contenedor.innerHTML += `
-      <div class="producto">
-        <b>ID: ${p.ID} | ${p.Nombre}</b><br>
-        $${p.Precio}<br>
-        Stock: ${p.Stock} u.
-        <button onclick="vender('${p.ID}')">Vender 1</button>
-        <button onclick="sumarStock('${p.ID}')">+1</button>
-      </div>
-    `;
-  });
-}
-// REGISTRAR PRODUCTO
-document.getElementById('btnRegistrarProducto').onclick = async () => {
-  const producto = {
-    ID: document.getElementById('idUnico').value,
-    Nombre: document.getElementById('nombre').value,
-    Precio: parseFloat(document.getElementById('precio').value),
-    Costo: parseFloat(document.getElementById('costo').value),
-    Stock: parseInt(document.getElementById('cantidad').value)
-  };
-  await fetch(API + '/productos', {
-    method: 'POST',
-    headers: {'Content-Type': 'application/json'},
-    body: JSON.stringify(producto)
-  });
-  cargarProductos(); // Recargar lista
-  alert('Producto guardado en MongoDB');
-};
-// VENDER 1
-async function vender(id) {
-  await fetch(API + '/ventas', {
-    method: 'POST',
-    headers: {'Content-Type': 'application/json'},
-    body: JSON.stringify({productoID: id, cantidad: 1, vendedor: 'General'})
-  });
-  cargarProductos();
-}
-// SUMAR STOCK +1
-async function sumarStock(id) {
-  await fetch(API + '/productos/sumar', {
-    method: 'POST',
-    headers: {'Content-Type': 'application/json'},
-    body: JSON.stringify({id, cantidad: 1})
-  });
-  cargarProductos();
-}
-cargarProductos(); // Cargar al abrir la página
+        tabsContainer.innerHTML = htmlTabs;
+
+        let claveBusquedaMes = `${this.mesReporteSeleccionado} de ${añoActual}`;
+        let datosDeEsteMes = mesesData[claveBusquedaMes] || { ventas: [], compras: [] };
+
+        let tagIndicadorExtra = claveBusquedaMes === mesActualClaveCompleta? ' (Mes en Curso)' : '';
+
+        contentContainer.innerHTML = this.generarHTMLBloqueMes(
+            `${this.mesReporteSeleccionado.toUpperCase()} ${añoActual}${tagIndicadorExtra}`,
+            claveBusquedaMes,
+            datosDeEsteMes
+        );
+    }
+
+    agregarCompraManual(claveMes) {
+        const nombre = document.getElementById('manual-compra-nombre').value.trim();
+        const cantidad = Number(document.getElementById('manual-compra-cantidad').value);
+        const total = Number(document.getElementById('manual-compra-total').value);
+        if (!nombre || cantidad <= 0 || total < 0) return alert("Complete todos los campos");
+        let partes = claveMes.split(" de ");
+        let mesIndex = this.listaNombresMeses.indexOf(partes[0]);
+        let fechaFicticia = new Date(Number(partes[1]), mesIndex, 15);
+        this.historialCompras.push({nombre, cantidad, totalInvertido: total, fecha: fechaFicticia});
+        this.actualizarInterfaz();
+    }
+
+    agregarVentaManual(claveMes) {
+        const nombre = document.getElementById('manual-venta-nombre').value.trim();
+        const vended = document.getElementById('manual-venta-vendedor').value.trim() || "General";
+        const cantidad = Number(document.getElementById('manual-venta-cantidad').value);
+        const total = Number(document.getElementById('manual-venta-total').value);
+        if (!nombre || cantidad <= 0 || total < 0) return alert("Complete todos los campos");
+        let partes = claveMes.split(" de ");
+        let mesIndex = this.listaNombresMeses.indexOf(partes[0]);
+        let fechaFicticia = new Date(Number(partes[1]), mesIndex, 15);
+        this.historialVentas.push({idVenta: this.historialVentas.length + 1, nombre, vendedor: vended, cantidad, totalVendido: total, fecha: fechaFicticia});
+        this.actualizarInterfaz();
+    }
+
+    limpiarMesEspecifico(claveMes) {
+        if(confirm(`¿Limpiar "${claveMes}"?`)) {
+            this.historialVentas = this.historialVentas.filter(v => v.fecha.toLocaleString('es-ES', { month: 'long', year: 'numeric' })!== claveMes);
+            this.historialCompras = this.historialCompras.filter(c => c.fecha.toLocaleString('es-ES', { month: 'long', year: 'numeric' })!== claveMes);
+            delete this.ajustesManualesMeses[claveMes];
+            this.actualizarInterfaz();
+        }
+    }
+
+    editarBalanceManual(claveMes, totalVendidoActual, totalInvertidoActual) {
+        let nuevoVendido = prompt(`Modificar total vendido para [${claveMes}]:`, totalVendidoActual);
+        if(nuevoVendido === null) return;
+        let nuevoInvertido = prompt(`Modificar total invertido para [${claveMes}]:`, totalInvertidoActual);
+        if(nuevoInvertido === null) return;
+        this.ajustesManualesMeses[claveMes] = {vendido: Number(nuevoVendido) || 0, invertido: Number(nuevoInvertido) || 0, manuales: true};
+        this.actualizarInterfaz();
+    }
 }
 
-// Instancia global
 const miTienda = new Tienda();
 
-// Listeners de Formularios - CONECTADOS A MONGO
 document.getElementById('form-producto').addEventListener('submit', function(e) {
     e.preventDefault();
     miTienda.comprarProducto(
