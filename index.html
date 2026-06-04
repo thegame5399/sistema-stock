@@ -526,11 +526,11 @@
                         <h2>Comprar / Registrar Producto</h2>
                         <form id="form-producto">
                             <div class="form-group"><label>ID Unico</label><input type="number" id="prod-id" required></div>
-                            <div class="form-group"><label>Nombre</label><input type="text" nombre required></div>
-                            <div class="form-group"><label>Precio de Venta ($)</label><input type="number" "id="prod-precio" step="0.01" required></div>
+                            <div class="form-group"><label>Nombre</label><input type="text" id="prod-nombre"required></div>
+                            <div class="form-group"><label>Precio de Venta ($)</label><input type="number" id="prod-precio" step="0.01" required></div>
                             <div class="form-group"><label>Costo de Compra ($)</label><input type="number" id="prod-costo" step="0.01" required></div>
                             <div class="form-group"><label>Cantidad Inicial</label><input type="number" id="prod-cantidad" required></div>
-                            <button type="submit">Registrar Stock</button>
+                            <button id="btnRegistrarProducto"type="submit">Registrar Stock</button>
                         </form>
                     </div>
                 </div>
@@ -1312,7 +1312,7 @@ async function cargarProductos() {
 }
 
 // REGISTRAR PRODUCTO
-document.getElementById('btnRegistrar').onclick = async () => {
+document.getElementById('btnRegistrarProducto').onclick = async () => {
   const producto = {
     ID: document.getElementById('idUnico').value,
     Nombre: document.getElementById('nombre').value,
