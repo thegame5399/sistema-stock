@@ -98,6 +98,8 @@ const PORT = process.env.PORT || 3000;
   server.listen(PORT, () => {
     console.log(`Servidor iniciado en http://localhost:${PORT}`);
   });
+}catch (err){ console.error(err);
+}
 }
 
 main().catch(err => {
