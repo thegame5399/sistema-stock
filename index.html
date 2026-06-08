@@ -808,39 +808,40 @@ class Tienda {
                 </div>`;
         });
 
-async function realizarVenta() {
-    const productoId = document.getElementById('producto-select').value;
-    const cantidad = parseInt(document.getElementById('cantidad-input').value);
+// 3. Pintar ventas recientes - VERSIÓN QUE NO ROMPE
+const contVentas = document.getElementById('lista-ventas-hoy');
+contVentas.innerHTML = '';
+
+console.log('Ventas para pintar:', this.historialVentas); // Debug
+
+if(!this.historialVentas || this.historialVentas.length === 0) {
+    contVentas.innerHTML = '<tr><td colspan="6" style="text-align:center; color:#999">No hay ventas registradas</td></tr>';
+} else {
+    const ultimasVentas = this.historialVentas.slice(-10).reverse();
     
-    if (!productoId || !cantidad || cantidad <= 0) {
-        alert('Seleccioná un producto y poné una cantidad válida');
-        return;
-    }
-    
-    try {
-        const res = await fetch(`${API_URL}/ventas`, {
-            method: 'POST',
-            headers: {'Content-Type': 'application/json'},
-            body: JSON.stringify({
-                productoId: productoId,
-                cantidad: cantidad,
-                fecha: new Date().toISOString()
-            })
-        });
+    ultimasVentas.forEach(v => {
+        // Forzar que fecha sea Date aunque venga string
+        const fecha = v.fecha ? new Date(v.fecha) : new Date();
+        const fechaFormateada = fecha.toLocaleDateString('es-AR') + ' + 
+                              fecha.toLocaleTimeString('es-AR', {hour: '2-digit', minute:'2-digit'});
         
-        const data = await res.json();
+        // Soportar campos con nombres distintos por si acaso
+        const idVenta = v.idVenta || v._id || '-';
+        const nombre = v.nombre || v.producto || v.productoNombre || 'Producto';
+        const cantidad = v.cantidad || 0;
+        const total = v.totalVendido || v.total || (v.precio * v.cantidad) || 0;
+        const vendedor = v.vendedor || 'Sistema';
         
-        if (res.ok) {
-            alert(`Venta registrada: ${data.producto} x${cantidad}`);
-            cargarProductos(); // Recargar stock
-            document.getElementById('cantidad-input').value = '';
-        } else {
-            alert('Error: ' + data.error);
-        }
-    } catch (error) {
-        console.error('Error en venta:', error);
-        alert('No se pudo registrar la venta');
-    }
+        contVentas.innerHTML += `
+            <tr>
+                <td>#${idVenta}</td>
+                <td>${nombre}</td>
+                <td>${cantidad}</td>
+                <td>$${Number(total).toFixed(2)}</td>
+                <td><strong>${vendedor}</strong></td>
+                <td><small>${fechaFormateada}</small></td>
+            </tr>`;
+    });
 }
 
         const contSecciones = document.getElementById('contenedor-secciones-dinamicas');
