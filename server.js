@@ -83,6 +83,27 @@ db.collection('productos').updateOne({
 $inc: { Stock: -datos.cantidad}});
 res.end('ok');});
 }
+else if (req.url === '/ventas' && req.method === 'GET') {
+  const ventas = await db.collection('ventas').find ({}).sort({fecha: -1}).toArray();
+  res.writeHead(200, {'Content-Type': 'application/json'});
+  res.end(JSON.stringify(ventas));
+}
+
+else if (req.url === '/ventas' && req.method === 'POST') {
+  let body = '';
+  req.on('data', chunck => body += chunk);
+  req.on('end', async () => {
+	try {
+	  const venta = JSON.parse(body);
+	  venta.fecha = new date(),
+	  await db.collection('ventas').insertOne(venta);
+	  res.writeHead(200, {'Content-Type': 'application/json'});
+	  res.end(JSON.stringify({ok: true}));
+	} catch(err) {
+	  res.writeHead(500).end(JSON.stringify({error: err.message}));
+	}
+   });
+}
     else if (req.url === '/mensajes' && req.method === 'GET') {
       // Obtener datos de Mongo y devolver JSON
       const docs = await collection.find({}).toArray();
@@ -106,24 +127,3 @@ main().catch(err => {
 console.error('ERROR FATAL:', err);
 process.exit(1);
 });
-else if (req.url === '/ventas' && req.method === 'GET') {
-  const ventas = await db.collection('ventas').find ({}).sort({fecha: -1}).toArray();
-  res.writeHead(200, {'Content-Type': 'application/json'});
-  res.end(JSON.stringify(ventas));
-}
-
-else if (req.url === '/ventas' && req.method === 'POST') {
-  let body = '';
-  req.on('data', chunck => body += chunk);
-  req.on('end', async () => {
-	try {
-	  const venta = JSON.parse(body);
-	  venta.fecha = new date(),
-	  await db.collection('ventas').insertOne(venta);
-	  res.writeHead(200, {'Content-Type': 'application/json'});
-	  res.end(JSON.stringify({ok: true}));
-	} catch(err) {
-	  res.writeHead(500).end(JSON.stringify({error: err.message}));
-	}
-   });
-}
