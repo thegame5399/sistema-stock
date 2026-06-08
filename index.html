@@ -808,12 +808,34 @@ class Tienda {
                 </div>`;
         });
 
-        const contVentas = document.getElementById('lista-ventas-hoy');
-        contVentas.innerHTML = '';
-        this.historialVentas.slice(-5).reverse().forEach(v => {
-            let fechaFormateada = v.fecha.toLocaleDateString() + ' - ' + v.fecha.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
-            contVentas.innerHTML += `<tr><td>#${v.idVenta}</td><td>${v.nombre}</td><td>${v.cantidad}</td><td>$${v.totalVendido.toFixed(2)}</td><td><strong>${v.vendedor}</strong></td><td><small>${fechaFormateada}</small></td></tr>`;
-        });
+const contVentas = document.getElementById('lista-ventas-hoy');
+contVentas.innerHTML = '';
+
+const ultimasVentas = this.historialVentas.slice(-10).reverse();
+
+if(ultimasVentas.length === 0) {
+    contVentas.innerHTML = '<tr><td colspan="6" style="text-align:center; color:#999">No hay ventas registradas</td></tr>';
+} else {
+    ultimasVentas.forEach(v => {
+        try {
+            const fecha = new Date(v.fecha);
+            const fechaFormateada = fecha.toLocaleDateString('es-AR') + ' + 
+                                  fecha.toLocaleTimeString('es-AR', {hour: '2-digit', minute:'2-digit'});
+            
+            contVentas.innerHTML += `
+                <tr>
+                    <td>#${v.idVenta || '-'}</td>
+                    <td>${v.nombre || 'Producto'}</td>
+                    <td>${v.cantidad}</td>
+                    <td>$${v.totalVendido.toFixed(2)}</td>
+                    <td><strong>${v.vendedor}</strong></td>
+                    <td><small>${fechaFormateada}</small></td>
+                </tr>`;
+        } catch(e) {
+            console.error('Error pintando venta:', v);
+        }
+    });
+}
 
         const contSecciones = document.getElementById('contenedor-secciones-dinamicas');
         if (contSecciones) {
