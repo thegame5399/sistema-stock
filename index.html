@@ -572,15 +572,22 @@ class Tienda {
 
     async cargarDatos() {
         try {
-            const res = await fetch(API + '/productos');
-            if(res.ok) {
+            const resProd = await fetch(API + '/productos');
+            if(resProd.ok) {
                 this.inventario = await res.json();
-                this.actualizarInterfaz();
-            }
-        } catch(err) {
-            console.error('Error cargando productos:', err);
-        }
-    }
+              } 
+	   const resVentas = await fetch(API + '/ventas');
+	   if(resVentas.ok) {
+		this.historialVentas = await resVentas.json();
+		this.historialVentas.forEach(v => {
+		  v.fecha = new Date(v.fecha);
+	});
+     }
+	this.actualizarInterfaz();
+	} catch(err) {
+	console.error('Error cargado datos:', err);
+	}
+}
 
     registrarClickLogo() {
         this.clicksLogo++;
