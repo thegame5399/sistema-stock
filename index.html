@@ -572,25 +572,15 @@ class Tienda {
 
     async cargarDatos() {
         try {
-            const resProd = await fetch(API + '/productos');
-            if(resInventario.ok) {
+            const res = await fetch(API + '/productos');
+            if(res.ok) {
                 this.inventario = await res.json();
-              } 
-	   const resVentas = await fetch(API + '/ventas');
-	   if(resVentas.ok) {
-		this.historialVentas = await resVentas.json();
-		this.historialVentas = this.historialVentas.map(v => {
-                return { ...v,
-                fecha: new Date(v,fecha)};
-}).filter(v => !isNaN(v.fecha.getTime()));
-}
-	});
-     }
-	this.actualizarInterfaz();
-	} catch(err) {
-	console.error('Error cargado datos:', err);
-	}
-}
+                this.actualizarInterfaz();
+            }
+        } catch(err) {
+            console.error('Error cargando productos:', err);
+        }
+    }
 
     registrarClickLogo() {
         this.clicksLogo++;
@@ -821,11 +811,8 @@ class Tienda {
         const contVentas = document.getElementById('lista-ventas-hoy');
         contVentas.innerHTML = '';
         this.historialVentas.slice(-5).reverse().forEach(v => {
-          try{
             let fechaFormateada = v.fecha.toLocaleDateString() + ' - ' + v.fecha.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
             contVentas.innerHTML += `<tr><td>#${v.idVenta}</td><td>${v.nombre}</td><td>${v.cantidad}</td><td>$${v.totalVendido.toFixed(2)}</td><td><strong>${v.vendedor}</strong></td><td><small>${fechaFormateada}</small></td></tr>`;
-           } catch(e) {
-           console.error('Error pintando venta:',v,e);
         });
 
         const contSecciones = document.getElementById('contenedor-secciones-dinamicas');
