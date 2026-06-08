@@ -575,7 +575,12 @@ class Tienda {
             const res = await fetch(API + '/productos');
             if(res.ok) {
                 this.inventario = await res.json();
-                this.actualizarInterfaz();
+		const ventasRes=await fetch(API+ '/ventas');
+		if (ventasRes.ok) {
+			this.historialVentas = await
+		ventasRes.json();                
+		}
+		this.actualizarInterfaz();
             }
         } catch(err) {
             console.error('Error cargando productos:', err);
@@ -725,7 +730,7 @@ class Tienda {
             console.error(err);
             alert('Error de conexión');
         }
-    } // <- ACÁ FALTABA ESTA LLAVE
+    } 
 
     async realizarVenta(idProducto) {
         let producto = this.inventario.find(p => p.ID === idProducto);
@@ -737,7 +742,7 @@ class Tienda {
             await fetch(API + '/ventas', {
                 method: 'POST',
                 headers: {'Content-Type': 'application/json'},
-                body: JSON.stringify({productoID: producto.ID, cantidad: 1, vendedor: vendedorSeleccionado})
+                body: JSON.stringify({productoID: producto.ID,producto: producto.Nombre,total: producto.precio, cantidad: 1, vendedor: vendedorSeleccionado})
             });
             await this.cargarDatos();
         } catch(err) {
@@ -911,6 +916,29 @@ async function realizarVenta() {
         }
 
         this.generarSeccionMesesAnual();
+const tablaVentas =
+document.getElementById('lista-ventas-hoy');
+if (tablaVentas) {
+tablaVentas.innerHTML = '';
+
+this.historialVentas
+.slice(0, 20)
+forEach(v => {
+
+const fecha = new
+Date(v.fecha);
+
+tablaVentas.innerHTML += `
+	<tr>
+	<td>${v._id?.slice(-6) || ''} </td>
+<td>${v,productoID}</td>
+<td>${v.cantidad}</td>
+<td>-</td>
+<td>${v.vendedor || 'general'}</td>
+<td>${fecha.toLocaleString('es-AR')}</td>
+</tr>
+`;
+});
     }
 
     generarHTMLBloqueMes(mesTituloBonito, claveAgrupacion, datosMes) {
