@@ -24,7 +24,6 @@
             margin-bottom: 20px;
             color: #2c3e50;
         }
-        /* Encabezado modificado para soportar el logo a la derecha */
         header {
             position: relative;
             text-align: center;
@@ -35,7 +34,6 @@
             justify-content: center;
             align-items: center;
         }
-        /* Estilos para el Logo */
         .logo-top-right {
             position: absolute;
             right: 0;
@@ -46,7 +44,6 @@
             object-fit: contain;
             cursor: pointer;
         }
-        /* Sistema de Pestañas Principales */
         .tabs {
             display: flex;
             gap: 10px;
@@ -74,7 +71,6 @@
         .tab-content.active {
             display: block;
         }
-        /* Layout Principal */
         .main-layout {
             display: grid;
             grid-template-columns: 1fr 2fr;
@@ -116,7 +112,6 @@
             cursor: pointer;
             font-weight: bold;
         }
-        /* Barra de Vendedor y Buscador */
         .vendedor-global-bar {
             background: #2c3e50;
             color: white;
@@ -127,16 +122,17 @@
             align-items: center;
             gap: 15px;
             box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            flex-wrap: wrap;
         }
         .vendedor-global-bar label {
             margin: 0;
             font-size: 16px;
             white-space: nowrap;
         }
-        .vendedor-global-bar select {
-            flex-grow: 1;
+        .vendedor-global-bar select, .vendedor-global-bar input {
             font-weight: bold;
             color: #333;
+            width: auto;
         }
         .buscador-bar {
             margin-bottom: 20px;
@@ -144,8 +140,8 @@
         .buscador-bar input {
             border: 2px solid #3498db;
             box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            width: 100%;
         }
-        /* Lista de vendedores */
         .vendedores-lista {
             margin-top: 15px;
             list-style: none;
@@ -173,7 +169,6 @@
             width: auto;
         }
         .btn-quitar:hover { background-color: #c0392b; }
-        /* Tarjetas de Productos */
         .productos-grid {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
@@ -208,7 +203,6 @@
             margin-top: 5px;
         }
         .btn-eliminar-prod:hover { background-color: #e74c3c; color: white; }
-        /* Tablas */
         .tabla-container {
             background: white;
             padding: 20px;
@@ -220,7 +214,6 @@
         table { width: 100%; border-collapse: collapse; margin-top: 10px; }
         th, td { padding: 12px; text-align: left; border-bottom: 1px solid #ddd; }
         th { background-color: #f8f9fa; }
-        /* Estilos de la Pestaña Secciones (Tonalidad Amarilla Suavizada) */
         .seccion-bloque {
             background: white;
             padding: 20px;
@@ -266,7 +259,6 @@
             padding: 5px;
             font-size: 13px;
         }
-        /* Reportes y Objetivos */
         .top-reportes-grid {
             display: grid;
             grid-template-columns: 2fr 1fr;
@@ -303,7 +295,6 @@
             color: #333;
             font-size: 14px;
         }
-        /* Estilos Reporte Mensual y Bloqueo */
         .mes-bloque {
             background: white;
             padding: 20px;
@@ -389,7 +380,6 @@
             font-style: italic;
             margin-bottom: 10px;
         }
-        /* Estilos de la capa del Easter egg de Imagen */
         .easter-egg-overlay {
             display: none;
             position: fixed;
@@ -410,7 +400,6 @@
             box-shadow: 0 0 25px rgba(255, 255, 255, 0.4);
             object-fit: contain;
         }
-        /* Adaptación para celulares */
         @media (max-width: 768px) {
             .main-layout {
                 grid-template-columns: 1fr;
@@ -439,6 +428,7 @@
         </header>
         <div class="tabs">
             <button class="tab-button active" onclick="cambiarPestaña('operaciones')">Operaciones y Ventas</button>
+            <button class="tab-button" onclick="cambiarPestaña('pedidos')">Gestión de Pedidos</button>
             <button class="tab-button" onclick="cambiarPestaña('secciones-stock')">Organizar por Secciones</button>
             <button class="tab-button" onclick="cambiarPestaña('reporte-mensual')">Reporte por Meses</button>
         </div>
@@ -471,10 +461,25 @@
                 </div>
                 <div>
                     <div class="vendedor-global-bar">
-                        <label>Vendedor Actual:</label>
-                        <select id="vendedor-global">
-                            <option value="General">Sin especificar (General)</option>
-                        </select>
+                        <div style="display: inline-block; margin-right: 15px;">
+                            <label>Vendedor Actual:</label>
+                            <select id="vendedor-global">
+                                <option value="General">Sin especificar (General)</option>
+                            </select>
+                        </div>
+                        <div style="display: inline-block; margin-right: 15px;">
+                            <label>Método de Pago:</label>
+                            <select id="venta-metodo-pago" onchange="document.getElementById('venta-descuento-container').style.display = this.value === 'efectivo' ? 'inline-block' : 'none'">
+                                <option value="qr">QR</option>
+                                <option value="efectivo">Efectivo</option>
+                                <option value="transferencia">Transferencia</option>
+                                <option value="tarjeta">Tarjeta de Crédito</option>
+                            </select>
+                        </div>
+                        <div id="venta-descuento-container" style="display: none;">
+                            <label>Descuento ($):</label>
+                            <input type="number" id="venta-descuento" value="0" min="0" step="0.01" style="width: 100px; padding: 5px; border-radius: 4px;">
+                        </div>
                     </div>
                     <h2>Inventario Disponible</h2>
                     <div class="buscador-bar">
@@ -500,6 +505,51 @@
                 </div>
             </div>
         </div>
+
+        <div id="pedidos" class="tab-content">
+            <div class="main-layout">
+                <div>
+                    <div class="panel">
+                        <h2>Registrar Nuevo Pedido</h2>
+                        <form id="form-pedido">
+                            <div class="form-group">
+                                <label>Pedido de quién (Nombre Manual)</label>
+                                <input type="text" id="ped-cliente" required placeholder="Ej: Juan Pérez">
+                            </div>
+                            <div class="form-group">
+                                <label>Seleccionar Producto</label>
+                                <select id="ped-producto" required></select>
+                            </div>
+                            <div class="form-group">
+                                <label>Operario</label>
+                                <select id="ped-operario"></select>
+                            </div>
+                            <button type="submit" style="background-color: #3498db;">Guardar Pedido</button>
+                        </form>
+                    </div>
+                </div>
+                <div>
+                    <h2>Lista de Pedidos</h2>
+                    <div class="tabla-container">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>ID Pedido</th>
+                                    <th>Cliente</th>
+                                    <th>Producto (ID)</th>
+                                    <th>Monto</th>
+                                    <th>Operario</th>
+                                    <th>Fecha Pedido</th>
+                                    <th>Estado / Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody id="lista-pedidos-cuerpo"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
         <div id="secciones-stock" class="tab-content">
             <div class="main-layout">
                 <div>
@@ -557,6 +607,7 @@ class Tienda {
         this.historialCompras = [];
         this.historialVentas = [];
         this.vendedores = [];
+        this.pedidos = [];
         this.objetivoMensual = 2000;
         this.clicksLogo = 0;
         this.timeoutImagen = null;
@@ -575,15 +626,14 @@ class Tienda {
             const res = await fetch(API + '/productos');
             if(res.ok) {
                 this.inventario = await res.json();
-		const ventasRes=await fetch(API+ '/ventas');
-		if (ventasRes.ok) {
-			this.historialVentas = await
-		ventasRes.json();                
-		}
-		this.actualizarInterfaz();
+                const ventasRes = await fetch(API + '/ventas');
+                if (ventasRes.ok) {
+                    this.historialVentas = await ventasRes.json();                
+                }
+                this.actualizarInterfaz();
             }
         } catch(err) {
-            console.error('Error cargando productos:', err);
+            console.error('Error cargando datos de inicializacion:', err);
         }
     }
 
@@ -709,11 +759,14 @@ class Tienda {
 
             if(res.ok) {
                 await this.cargarDatos();
-                alert('Producto guardado en MongoDB ✅');
-            } else alert('Error al guardar producto');
+                alert('Producto guardado en la base de datos');
+            } else {
+                const data = await res.json();
+                alert('Error al guardar producto: ' + (data.error || 'Desconocido'));
+            }
         } catch(err) {
             console.error(err);
-            alert('Error de conexión con el servidor');
+            alert('Error de conexión con el servidor al registrar el producto');
         }
     }
 
@@ -728,23 +781,52 @@ class Tienda {
             await this.cargarDatos();
         } catch (err) {
             console.error(err);
-            alert('Error de conexión');
+            alert('Error de conexión al sumar stock');
         }
-    } 
+    }
 
     async realizarVenta(idProducto) {
         let producto = this.inventario.find(p => p.ID === idProducto);
-        if (!producto || producto.Stock < 1) return alert("Sin stock");
+        let stockActual = producto.Stock !== undefined ? producto.Stock : (producto.stock || 0);
+        let precioActual = producto.Precio !== undefined ? producto.Precio : (producto.precio || 0);
+
+        if (!producto || stockActual < 1) return alert("Sin stock disponible para la venta.");
 
         let vendedorSeleccionado = document.getElementById('vendedor-global')?.value || "General";
+        let metPago = document.getElementById('venta-metodo-pago')?.value || "qr";
+        let desc = 0;
+
+        if (metPago === 'efectivo') {
+            desc = Number(document.getElementById('venta-descuento')?.value) || 0;
+            if (desc > precioActual) {
+                alert("El descuento no puede ser mayor al precio original del producto ($" + precioActual + ")");
+                return;
+            }
+        }
+
+        let total = precioActual - desc;
 
         try {
-            await fetch(API + '/ventas', {
+            const res = await fetch(API + '/ventas', {
                 method: 'POST',
                 headers: {'Content-Type': 'application/json'},
-                body: JSON.stringify({productoID: producto.ID,producto: producto.Nombre,total: producto.precio, cantidad: 1, vendedor: vendedorSeleccionado})
+                body: JSON.stringify({
+                    productoID: producto.ID,
+                    nombre: producto.Nombre,
+                    totalVendido: total,
+                    cantidad: 1,
+                    vendedor: vendedorSeleccionado,
+                    metodoPago: metPago,
+                    descuento: desc
+                })
             });
-            await this.cargarDatos();
+            
+            if(res.ok) {
+                alert('Venta registrada con éxito');
+                await this.cargarDatos();
+            } else {
+                alert('Hubo un error del servidor al procesar la venta');
+            }
         } catch(err) {
             console.error(err);
             alert('Error al registrar venta');
@@ -753,7 +835,78 @@ class Tienda {
 
     eliminarProducto(idProducto) {
         if(confirm("¿Eliminar producto del catálogo?")) {
-            alert('Función pendiente - agregá endpoint DELETE en backend');
+            alert('Función pendiente de vinculación al servidor.');
+        }
+    }
+
+    /* MÉTODOS DE LA GESTIÓN DE PEDIDOS */
+    crearPedido(cliente, productoId, operario) {
+        let prod = this.inventario.find(p => p.ID === Number(productoId));
+        if (!prod) return alert("Selecciona un producto válido.");
+
+        let precioActual = prod.Precio !== undefined ? prod.Precio : (prod.precio || 0);
+
+        const nuevoPedido = {
+            id: this.pedidos.length + 1,
+            cliente: cliente.trim(),
+            productoId: prod.ID,
+            productoNombre: prod.Nombre,
+            montoOriginal: precioActual,
+            montoFinal: precioActual,
+            operario: operario,
+            fechaPedido: new Date(),
+            estado: 'Pendiente',
+            fechaRetiro: null,
+            metodoPago: null,
+            descuento: 0
+        };
+
+        this.pedidos.push(nuevoPedido);
+        this.actualizarInterfaz();
+        alert("Pedido registrado con éxito");
+    }
+
+    async entregarPedido(idPedido) {
+        let ped = this.pedidos.find(p => p.id === idPedido);
+        if (!ped) return;
+
+        const metPago = document.getElementById(`pay-method-${idPedido}`).value;
+        let desc = 0;
+
+        if (metPago === 'efectivo') {
+            const descInput = document.getElementById(`discount-${idPedido}`).value;
+            desc = Number(descInput) || 0;
+            if (desc > ped.montoOriginal) {
+                alert("El descuento no puede ser mayor al precio del producto ($" + ped.montoOriginal + ")");
+                return;
+            }
+        }
+
+        ped.fechaRetiro = new Date();
+        ped.metodoPago = metPago;
+        ped.descuento = desc;
+        ped.montoFinal = Math.max(0, ped.montoOriginal - desc);
+        ped.estado = 'Retirado';
+
+        try {
+            await fetch(API + '/ventas', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({
+                    productoID: ped.productoId,
+                    nombre: `${ped.productoNombre} (Pedido de ${ped.cliente})`,
+                    totalVendido: ped.montoFinal,
+                    cantidad: 1,
+                    vendedor: ped.operario,
+                    metodoPago: metPago,
+                    descuento: desc
+                })
+            });
+            await this.cargarDatos();
+            alert("Pedido retirado y registrado como venta de forma correcta.");
+        } catch(err) {
+            console.error(err);
+            alert("El pedido se procesó localmente pero hubo un error al guardarlo en base de datos.");
         }
     }
 
@@ -780,6 +933,19 @@ class Tienda {
         selectorGlobal.innerHTML = `<option value="General">Sin especificar (General)</option>` + this.vendedores.map(v => `<option value="${v}">${v}</option>`).join('');
         selectorGlobal.value = this.vendedores.includes(seleccionPrevia)? seleccionPrevia : "General";
 
+        /* Llenar selectores del formulario de pedidos */
+        const pedProductoSel = document.getElementById('ped-producto');
+        if (pedProductoSel) {
+            pedProductoSel.innerHTML = this.inventario.map(p => {
+                let pPrecio = p.Precio !== undefined ? p.Precio : (p.precio || 0);
+                return `<option value="${p.ID}">${p.Nombre} (ID: ${p.ID} - $${pPrecio.toFixed(2)})</option>`;
+            }).join('');
+        }
+        const pedOperarioSel = document.getElementById('ped-operario');
+        if (pedOperarioSel) {
+            pedOperarioSel.innerHTML = `<option value="General">Sin especificar (General)</option>` + this.vendedores.map(v => `<option value="${v}">${v}</option>`).join('');
+        }
+
         const configObjetivo = document.getElementById('config-objetivo-container');
         if (configObjetivo) {
             configObjetivo.style.display = this.adminDesbloqueado? 'flex' : 'none';
@@ -793,60 +959,84 @@ class Tienda {
         contProd.innerHTML = invMostrar.length === 0? '<p>No se encontraron productos.</p>' : '';
 
         invMostrar.forEach(prod => {
-            const sinStock = prod.Stock === 0;
-            let txtStock = sinStock? "SIN STOCK" : (prod.Stock <= 3? `Stock: ${prod.Stock} u. (Poco)` : `Stock: ${prod.Stock} u.`);
+            const stockActual = prod.Stock !== undefined ? prod.Stock : (prod.stock || 0);
+            const precioActual = prod.Precio !== undefined ? prod.Precio : (prod.precio || 0);
+            
+            const sinStock = stockActual <= 0;
+            let txtStock = sinStock ? "SIN STOCK" : (stockActual <= 3 ? `Stock: ${stockActual} u. (Poco)` : `Stock: ${stockActual} u.`);
 
-            let btnEliminar = this.adminDesbloqueado? `<button class="btn-eliminar-prod" onclick="miTienda.eliminarProducto(${prod.ID})">Eliminar Producto</button>` : '';
+            let btnEliminar = this.adminDesbloqueado ? `<button class="btn-eliminar-prod" onclick="miTienda.eliminarProducto(${prod.ID})">Eliminar Producto</button>` : '';
 
             contProd.innerHTML += `
                 <div class="card">
                     <div class="card-header"><h3>ID: ${prod.ID} | ${prod.Nombre}</h3></div>
                     <div>
-                        <p class="precio">$${prod.Precio.toFixed(2)}</p>
-                        <p class="stock ${prod.Stock <= 3? 'alerta' : ''}">${txtStock}</p>
+                        <p class="precio">$${precioActual.toFixed(2)}</p>
+                        <p class="stock ${stockActual <= 3 ? 'alerta' : ''}">${txtStock}</p>
                     </div>
                     <div class="card-buttons">
-                        <button class="btn-venta" onclick="miTienda.realizarVenta(${prod.ID})" ${sinStock? 'disabled style="background-color:#ccc;"' : ''}>Vender 1</button>
+                        <button class="btn-venta" onclick="miTienda.realizarVenta(${prod.ID})" ${sinStock ? 'disabled style="background-color:#ccc;"' : ''}>Vender 1</button>
                         <button class="btn-reponer" onclick="miTienda.sumarUnidadStock(${prod.ID})">+1</button>
                     </div>
                     ${btnEliminar}
                 </div>`;
         });
 
-async function realizarVenta() {
-    const productoId = document.getElementById('producto-select').value;
-    const cantidad = parseInt(document.getElementById('cantidad-input').value);
-    
-    if (!productoId || !cantidad || cantidad <= 0) {
-        alert('Seleccioná un producto y poné una cantidad válida');
-        return;
-    }
-    
-    try {
-        const res = await fetch(`${API_URL}/ventas`, {
-            method: 'POST',
-            headers: {'Content-Type': 'application/json'},
-            body: JSON.stringify({
-                productoId: productoId,
-                cantidad: cantidad,
-                fecha: new Date().toISOString()
-            })
+        const contVentas = document.getElementById('lista-ventas-hoy');
+        contVentas.innerHTML = '';
+        this.historialVentas.slice(-5).reverse().forEach(v => {
+            let fechaVenta = new Date(v.fecha);
+            let fechaFormateada = fechaVenta.toLocaleDateString() + ' - ' + fechaVenta.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+            let tVendido = v.totalVendido || 0;
+            contVentas.innerHTML += `<tr><td>#${v._id ? v._id.slice(-4) : Math.floor(Math.random()*1000)}</td><td>${v.nombre}</td><td>${v.cantidad}</td><td>$${tVendido.toFixed(2)}</td><td><strong>${v.vendedor || 'General'}</strong></td><td><small>${fechaFormateada}</small></td></tr>`;
         });
-        
-        const data = await res.json();
-        
-        if (res.ok) {
-            alert(`Venta registrada: ${data.producto} x${cantidad}`);
-            cargarProductos(); // Recargar stock
-            document.getElementById('cantidad-input').value = '';
-        } else {
-            alert('Error: ' + data.error);
+
+        /* TABLA DE GESTIÓN DE PEDIDOS */
+        const contPedidos = document.getElementById('lista-pedidos-cuerpo');
+        if (contPedidos) {
+            contPedidos.innerHTML = this.pedidos.length === 0 ? '<tr><td colspan="7" style="text-align:center; color:#7f8c8d;">No hay pedidos registrados.</td></tr>' : '';
+            this.pedidos.slice().reverse().forEach(p => {
+                if (p.estado === 'Pendiente') {
+                    contPedidos.innerHTML += `
+                        <tr>
+                            <td>#${p.id}</td>
+                            <td><strong>${p.cliente}</strong></td>
+                            <td>${p.productoNombre} <br><small style="color:#7f8c8d;">ID: ${p.productoId}</small></td>
+                            <td>$${p.montoOriginal.toFixed(2)}</td>
+                            <td>${p.operario}</td>
+                            <td><small>${p.fechaPedido.toLocaleString()}</small></td>
+                            <td>
+                                <select id="pay-method-${p.id}" onchange="document.getElementById('div-desc-${p.id}').style.display = this.value === 'efectivo' ? 'inline-block' : 'none'" style="width:auto; padding:4px; font-size:13px; margin-bottom:5px;">
+                                    <option value="qr">QR</option>
+                                    <option value="efectivo">Efectivo</option>
+                                    <option value="transferencia">Transferencia</option>
+                                    <option value="tarjeta">Tarjeta de Crédito</option>
+                                </select>
+                                <div id="div-desc-${p.id}" style="display:none; margin-left:5px;">
+                                    <input type="number" id="discount-${p.id}" placeholder="Descuento $" style="width:90px; padding:4px; font-size:13px;">
+                                </div>
+                                <button onclick="miTienda.entregarPedido(${p.id})" style="width:auto; padding:5px 12px; font-size:13px; background-color:#2ecc71; display:block;">Retirar</button>
+                            </td>
+                        </tr>`;
+                } else {
+                    contPedidos.innerHTML += `
+                        <tr style="background-color: #f9f9f9; color: #7f8c8d;">
+                            <td>#${p.id}</td>
+                            <td>${p.cliente}</td>
+                            <td>${p.productoNombre} <br><small>ID: ${p.productoId}</small></td>
+                            <td>Orig: $${p.montoOriginal.toFixed(2)}<br><strong>Final: $${p.montoFinal.toFixed(2)}</strong></td>
+                            <td>${p.operario}</td>
+                            <td><small>Ped: ${p.fechaPedido.toLocaleString()}</small></td>
+                            <td>
+                                <span style="color:#27ae60; font-weight:bold;">Retirado</span><br>
+                                <small>Pago: <strong>${p.metodoPago.toUpperCase()}</strong></small><br>
+                                <small>Retiro: ${p.fechaRetiro.toLocaleString()}</small>
+                                ${p.descuento > 0 ? `<br><small style="color:#e67e22;">Desc: -$${p.descuento.toFixed(2)}</small>` : ''}
+                            </td>
+                        </tr>`;
+                }
+            });
         }
-    } catch (error) {
-        console.error('Error en venta:', error);
-        alert('No se pudo registrar la venta');
-    }
-}
 
         const contSecciones = document.getElementById('contenedor-secciones-dinamicas');
         if (contSecciones) {
@@ -855,13 +1045,14 @@ async function realizarVenta() {
                 let prodsDeSec = this.inventario.filter(p => (p.seccion || "General") === sec);
 
                 let filasProductos = prodsDeSec.map(p => {
+                    let stock = p.Stock !== undefined ? p.Stock : (p.stock || 0);
                     let opcionesSelect = this.secciones.map(s =>
                         `<option value="${s}" ${s === sec? 'selected' : ''}>${s}</option>`
                     ).join('');
 
                     return `
                         <div class="producto-fila-seccion">
-                            <span><strong>ID: ${p.ID}</strong> - ${p.Nombre} (Stock: ${p.Stock} u.)</span>
+                            <span><strong>ID: ${p.ID}</strong> - ${p.Nombre} (Stock: ${stock} u.)</span>
                             <div>
                                 <label style="display:inline; font-size:12px; margin-right:5px;">Mover a:</label>
                                 <select class="select-mover" onchange="miTienda.moverProductoASeccion(${p.ID}, this.value)">
@@ -916,18 +1107,19 @@ async function realizarVenta() {
         }
 
         this.generarSeccionMesesAnual();
+    }
 
     generarHTMLBloqueMes(mesTituloBonito, claveAgrupacion, datosMes) {
-        let totalVendido = datosMes.ventas.reduce((s, v) => s + v.totalVendido, 0);
-        let totalInvertido = datosMes.compras.reduce((s, c) => s + c.totalInvertido, 0);
+        let totalVendido = datosMes.ventas.reduce((s, v) => s + (v.totalVendido || 0), 0);
+        let totalInvertido = datosMes.compras.reduce((s, c) => s + (c.totalInvertido || 0), 0);
         if(this.ajustesManualesMeses[claveAgrupacion]) {
             totalVendido = this.ajustesManualesMeses[claveAgrupacion].vendido;
             totalInvertido = this.ajustesManualesMeses[claveAgrupacion].invertido;
         }
         let balance = totalVendido - totalInvertido;
 
-        let filasCompras = datosMes.compras.map(c => `<tr><td>${c.nombre}</td><td>${c.cantidad}</td><td>$${c.totalInvertido.toFixed(2)}</td></tr>`).join('');
-        let filasVentas = datosMes.ventas.map(v => `<tr><td>${v.nombre}</td><td>${v.vendedor}</td><td>${v.cantidad}</td><td>$${v.totalVendido.toFixed(2)}</td></tr>`).join('');
+        let filasCompras = datosMes.compras.map(c => `<tr><td>${c.nombre}</td><td>${c.cantidad}</td><td>$${(c.totalInvertido||0).toFixed(2)}</td></tr>`).join('');
+        let filasVentas = datosMes.ventas.map(v => `<tr><td>${v.nombre}</td><td>${v.vendedor || 'General'}</td><td>${v.cantidad}</td><td>$${(v.totalVendido||0).toFixed(2)}</td></tr>`).join('');
 
         let controlesAdminMes = '';
         let formularioManual = '';
@@ -991,19 +1183,19 @@ async function realizarVenta() {
         const mesActualClaveCompleta = `${mesActualLargo} de ${añoActual}`;
 
         this.historialVentas.forEach(v => {
-            let m = v.fecha.toLocaleString('es-ES', { month: 'long', year: 'numeric' });
+            let m = new Date(v.fecha).toLocaleString('es-ES', { month: 'long', year: 'numeric' });
             if (!mesesData[m]) mesesData[m] = { ventas: [], compras: [] };
             mesesData[m].ventas.push(v);
         });
 
         this.historialCompras.forEach(c => {
-            let m = c.fecha.toLocaleString('es-ES', { month: 'long', year: 'numeric' });
+            let m = new Date(c.fecha).toLocaleString('es-ES', { month: 'long', year: 'numeric' });
             if (!mesesData[m]) mesesData[m] = { ventas: [], compras: [] };
             mesesData[m].compras.push(c);
         });
 
         let datosMesActualEnCurso = mesesData[mesActualClaveCompleta] || { ventas: [], compras: [] };
-        let totalVendidoActual = datosMesActualEnCurso.ventas.reduce((s, v) => s + v.totalVendido, 0);
+        let totalVendidoActual = datosMesActualEnCurso.ventas.reduce((s, v) => s + (v.totalVendido || 0), 0);
         if(this.ajustesManualesMeses[mesActualClaveCompleta]) {
             totalVendidoActual = this.ajustesManualesMeses[mesActualClaveCompleta].vendido;
         }
@@ -1058,9 +1250,9 @@ async function realizarVenta() {
     }
 
     limpiarMesEspecifico(claveMes) {
-        if(confirm(`¿Limpiar "${claveMes}"?`)) {
-            this.historialVentas = this.historialVentas.filter(v => v.fecha.toLocaleString('es-ES', { month: 'long', year: 'numeric' })!== claveMes);
-            this.historialCompras = this.historialCompras.filter(c => c.fecha.toLocaleString('es-ES', { month: 'long', year: 'numeric' })!== claveMes);
+        if(confirm(`¿Limpiar el mes "${claveMes}"?`)) {
+            this.historialVentas = this.historialVentas.filter(v => new Date(v.fecha).toLocaleString('es-ES', { month: 'long', year: 'numeric' })!== claveMes);
+            this.historialCompras = this.historialCompras.filter(c => new Date(c.fecha).toLocaleString('es-ES', { month: 'long', year: 'numeric' })!== claveMes);
             delete this.ajustesManualesMeses[claveMes];
             this.actualizarInterfaz();
         }
@@ -1102,6 +1294,16 @@ document.getElementById('form-seccion').addEventListener('submit', function(e) {
     const campoSeccion = document.getElementById('seccion-nombre');
     miTienda.crearSeccion(campoSeccion.value);
     campoSeccion.value = '';
+});
+
+document.getElementById('form-pedido').addEventListener('submit', function(e) {
+    e.preventDefault();
+    miTienda.crearPedido(
+        document.getElementById('ped-cliente').value,
+        document.getElementById('ped-producto').value,
+        document.getElementById('ped-operario').value
+    );
+    this.reset();
 });
 </script>
 </body>
