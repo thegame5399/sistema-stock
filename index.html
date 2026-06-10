@@ -623,17 +623,55 @@ class Tienda {
 
     async cargarDatos() {
         try {
+            // Cargar configuracion persistida (Contraseña y Secciones)
+            const configRes = await fetch(API + '/config');
+            if (configRes.ok) {
+                const configData = await configRes.json();
+                if (configData.passwordReportes) this.passwordReportes = configData.passwordReportes;
+                if (configData.secciones) this.secciones = configData.secciones;
+            }
+
+            // Cargar productos
             const res = await fetch(API + '/productos');
             if(res.ok) {
                 this.inventario = await res.json();
+                
+                // Cargar ventas
                 const ventasRes = await fetch(API + '/ventas');
                 if (ventasRes.ok) {
                     this.historialVentas = await ventasRes.json();                
                 }
+                
+                // Cargar pedidos
+                const pedidosRes = await fetch(API + '/pedidos');
+                if (pedidosRes.ok) {
+                    const pedidosData = await pedidosRes.json();
+                    this.pedidos = pedidosData.map(p => {
+                        p.fechaPedido = new Date(p.fechaPedido);
+                        if (p.fechaRetiro) p.fechaRetiro = new Date(p.fechaRetiro);
+                        return p;
+                    });
+                }
+                
                 this.actualizarInterfaz();
             }
         } catch(err) {
             console.error('Error cargando datos de inicializacion:', err);
+        }
+    }
+
+    async guardarConfig() {
+        try {
+            await fetch(API + '/config', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({
+                    passwordReportes: this.passwordReportes,
+                    secciones: this.secciones
+                })
+            });
+        } catch(err) {
+            console.error("Error al guardar configuracion en base de datos:", err);
         }
     }
 
@@ -665,31 +703,34 @@ class Tienda {
         this.actualizarInterfaz();
     }
 
-    crearSeccion(nombre) {
+    async crearSeccion(nombre) {
         let limpio = nombre.trim();
-        if (limpio &&!this.secciones.includes(limpio)) {
+        if (limpio && !this.secciones.includes(limpio)) {
             this.secciones.push(limpio);
+            await this.guardarConfig();
             this.actualizarInterfaz();
         } else alert("La sección ya existe o no es válida.");
     }
 
-    editarSeccion(nombreAnterior) {
+    async editarSeccion(nombreAnterior) {
         let nuevoNombre = prompt("Nuevo nombre para la sección:", nombreAnterior);
         if (!nuevoNombre) return;
         nuevoNombre = nuevoNombre.trim();
-        if (nuevoNombre && nuevoNombre!== nombreAnterior) {
+        if (nuevoNombre && nuevoNombre !== nombreAnterior) {
             if (this.secciones.includes(nuevoNombre)) return alert("Ya existe una sección con ese nombre.");
-            this.secciones = this.secciones.map(s => s === nombreAnterior? nuevoNombre : s);
+            this.secciones = this.secciones.map(s => s === nombreAnterior ? nuevoNombre : s);
             this.inventario.forEach(p => { if (p.seccion === nombreAnterior) p.seccion = nuevoNombre; });
+            await this.guardarConfig();
             this.actualizarInterfaz();
         }
     }
 
-    eliminarSeccion(nombreSeccion) {
+    async eliminarSeccion(nombreSeccion) {
         if (nombreSeccion === "General") return alert("La sección 'General' no puede ser eliminada.");
         if (confirm(`¿Eliminar sección "${nombreSeccion}"?`)) {
             this.inventario.forEach(p => { if (p.seccion === nombreSeccion) p.seccion = "General"; });
-            this.secciones = this.secciones.filter(s => s!== nombreSeccion);
+            this.secciones = this.secciones.filter(s => s !== nombreSeccion);
+            await this.guardarConfig();
             this.actualizarInterfaz();
         }
     }
@@ -702,11 +743,12 @@ class Tienda {
         }
     }
 
-    cambiarPassword() {
+    async cambiarPassword() {
         const inputNueva = document.getElementById('input-nueva-pass');
         if(inputNueva.value.trim() === "") return alert("La contraseña no puede estar vacía.");
         this.passwordReportes = inputNueva.value;
         inputNueva.value = "";
+        await this.guardarConfig();
         alert("Contraseña actualizada.");
     }
 
@@ -839,15 +881,16 @@ class Tienda {
         }
     }
 
-    /* MÉTODOS DE LA GESTIÓN DE PEDIDOS */
-    crearPedido(cliente, productoId, operario) {
+    /* MÉTODOS DE LA GESTIÓN DE PEDIDOS PERMANENTES */
+    async crearPedido(cliente, productoId, operario) {
         let prod = this.inventario.find(p => p.ID === Number(productoId));
         if (!prod) return alert("Selecciona un producto válido.");
 
         let precioActual = prod.Precio !== undefined ? prod.Precio : (prod.precio || 0);
+        let nuevoId = this.pedidos.length > 0 ? Math.max(...this.pedidos.map(p => p.id)) + 1 : 1;
 
         const nuevoPedido = {
-            id: this.pedidos.length + 1,
+            id: nuevoId,
             cliente: cliente.trim(),
             productoId: prod.ID,
             productoNombre: prod.Nombre,
@@ -861,9 +904,23 @@ class Tienda {
             descuento: 0
         };
 
-        this.pedidos.push(nuevoPedido);
-        this.actualizarInterfaz();
-        alert("Pedido registrado con éxito");
+        try {
+            const res = await fetch(API + '/pedidos', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify(nuevoPedido)
+            });
+            if (res.ok) {
+                this.pedidos.push(nuevoPedido);
+                this.actualizarInterfaz();
+                alert("Pedido registrado con éxito");
+            } else {
+                alert("Error al sincronizar el pedido con el servidor");
+            }
+        } catch(err) {
+            console.error(err);
+            alert("Error de conexión al registrar el pedido");
+        }
     }
 
     async entregarPedido(idPedido) {
@@ -889,6 +946,14 @@ class Tienda {
         ped.estado = 'Retirado';
 
         try {
+            // Actualizar pedido en la base de datos
+            await fetch(API + '/pedidos', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify(ped)
+            });
+
+            // Impactar la venta correspondiente
             await fetch(API + '/ventas', {
                 method: 'POST',
                 headers: {'Content-Type': 'application/json'},
@@ -906,7 +971,7 @@ class Tienda {
             alert("Pedido retirado y registrado como venta de forma correcta.");
         } catch(err) {
             console.error(err);
-            alert("El pedido se procesó localmente pero hubo un error al guardarlo en base de datos.");
+            alert("El pedido se procesó localmente pero hubo un error de red al guardarlo.");
         }
     }
 
