@@ -112,6 +112,62 @@ async function main() {
         }
       });
     }
+    // NUEVA RUTA: ELIMINAR UN PRODUCTO DE LA BASE DE DATOS
+    else if (pathname === '/productos/eliminar' && req.method === 'POST') {
+      let body = '';
+      req.on('data', chunk => body += chunk);
+      req.on('end', async() => {
+        try {
+          const datos = JSON.parse(body);
+          await db.collection('productos').deleteOne(
+            { $or: [ { ID: datos.id }, { ID: Number(datos.id) }, { ID: String(datos.id) } ] }
+          );
+          res.writeHead(200, {'Content-Type': 'application/json'});
+          res.end(JSON.stringify({ ok: true }));
+        } catch(err) {
+          res.writeHead(500, {'Content-Type': 'application/json'});
+          res.end(JSON.stringify({ error: err.message }));
+        }
+      });
+    }
+    // NUEVA RUTA: RESETEAR PRODUCTOS DE UNA SECCIÓN A "General" AL ELIMINARLA
+    else if (pathname === '/productos/reset-seccion' && req.method === 'POST') {
+      let body = '';
+      req.on('data', chunk => body += chunk);
+      req.on('end', async() => {
+        try {
+          const datos = JSON.parse(body);
+          await db.collection('productos').updateMany(
+            { seccion: datos.seccion },
+            { $set: { seccion: "General" } }
+          );
+          res.writeHead(200, {'Content-Type': 'application/json'});
+          res.end(JSON.stringify({ ok: true }));
+        } catch(err) {
+          res.writeHead(500, {'Content-Type': 'application/json'});
+          res.end(JSON.stringify({ error: err.message }));
+        }
+      });
+    }
+    // NUEVA RUTA: ACTUALIZAR EL NOMBRE DE LA SECCIÓN EN TODOS SUS PRODUCTOS
+    else if (pathname === '/productos/renombrar-seccion' && req.method === 'POST') {
+      let body = '';
+      req.on('data', chunk => body += chunk);
+      req.on('end', async() => {
+        try {
+          const datos = JSON.parse(body);
+          await db.collection('productos').updateMany(
+            { seccion: datos.anterior },
+            { $set: { seccion: datos.nuevo } }
+          );
+          res.writeHead(200, {'Content-Type': 'application/json'});
+          res.end(JSON.stringify({ ok: true }));
+        } catch(err) {
+          res.writeHead(500, {'Content-Type': 'application/json'});
+          res.end(JSON.stringify({ error: err.message }));
+        }
+      });
+    }
     else if (pathname === '/ventas' && req.method === 'POST') {
       let body = '';
       req.on('data', chunk => body += chunk);
@@ -216,7 +272,6 @@ async function main() {
         }
       });
     }
-    // NUEVAS RUTAS: GESTIÓN DE PERSONAL
     else if (pathname === '/personal' && req.method === 'GET') {
       try {
         const personal = await db.collection('personal').find({}).toArray();
