@@ -83,7 +83,7 @@ async function main() {
         try {
           const datos = JSON.parse(body);
           await db.collection('productos').updateOne(
-            { ID: datos.id },
+            { $or: [ { ID: datos.id }, { ID: Number(datos.id) }, { ID: String(datos.id) } ] },
             { $inc: { Stock: datos.cantidad } }
           );
           res.writeHead(200, {'Content-Type': 'application/json'});
@@ -94,7 +94,6 @@ async function main() {
         }
       });
     }
-    // RUTA DE SECCIONES OPTIMIZADA: Guarda permanentemente el movimiento del objeto a su sección
     else if(pathname === '/productos/seccion' && req.method === 'POST') {
       let body ='';
       req.on('data', chunk => body += chunk);
@@ -124,7 +123,7 @@ async function main() {
           await db.collection('ventas').insertOne(venta);
          
           await db.collection('productos').updateOne(
-            { ID: venta.productoID },
+            { $or: [ { ID: venta.productoID }, { ID: Number(venta.productoID) }, { ID: String(venta.productoID) } ] },
             { $inc: { Stock: -venta.cantidad } }
           );
          
@@ -217,13 +216,12 @@ async function main() {
         }
       });
     }
-    // NUEVAS RUTAS: GESTIÓN DE PERSONAL EN SU PROPIA COLECCIÓN DE MONGO DB
+    // NUEVAS RUTAS: GESTIÓN DE PERSONAL
     else if (pathname === '/personal' && req.method === 'GET') {
       try {
-        let doc = await db.collection('personal').findOne({ _id: 'lista_personal' });
-        if (!doc) doc = { _id: 'lista_personal', lista: [] };
+        const personal = await db.collection('personal').find({}).toArray();
         res.writeHead(200, {'Content-Type': 'application/json'});
-        res.end(JSON.stringify(doc));
+        res.end(JSON.stringify(personal.map(p => p.nombre)));
       } catch(err) {
         res.writeHead(500, {'Content-Type': 'application/json'});
         res.end(JSON.stringify({ error: err.message }));
@@ -235,12 +233,26 @@ async function main() {
       req.on('end', async() => {
         try {
           const data = JSON.parse(body);
-          if (data._id) delete data._id;
           await db.collection('personal').updateOne(
-            { _id: 'lista_personal' },
-            { $set: data },
+            { nombre: data.nombre },
+            { $set: { nombre: data.nombre } },
             { upsert: true }
           );
+          res.writeHead(200, {'Content-Type': 'application/json'});
+          res.end(JSON.stringify({ ok: true }));
+        } catch(err) {
+          res.writeHead(500, {'Content-Type': 'application/json'});
+          res.end(JSON.stringify({ error: err.message }));
+        }
+      });
+    }
+    else if (pathname === '/personal/eliminar' && req.method === 'POST') {
+      let body = '';
+      req.on('data', chunk => body += chunk);
+      req.on('end', async() => {
+        try {
+          const data = JSON.parse(body);
+          await db.collection('personal').deleteOne({ nombre: data.nombre });
           res.writeHead(200, {'Content-Type': 'application/json'});
           res.end(JSON.stringify({ ok: true }));
         } catch(err) {
