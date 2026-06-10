@@ -94,14 +94,13 @@ async function main() {
         }
       });
     }
-    // NUEVA RUTA: GUARDAR SECCIÓN DE UN PRODUCTO ESPECÍFICO (Para evitar que se pierda al recargar)
+    // RUTA DE SECCIONES OPTIMIZADA: Guarda permanentemente el movimiento del objeto a su sección
     else if(pathname === '/productos/seccion' && req.method === 'POST') {
       let body ='';
       req.on('data', chunk => body += chunk);
       req.on('end', async() => {
         try {
           const datos = JSON.parse(body);
-          // CORRECCIÓN: Búsqueda flexible usando $or para evitar fallos de coincidencia si el ID se guardó como String o Number
           await db.collection('productos').updateOne(
             { $or: [ { ID: datos.id }, { ID: Number(datos.id) }, { ID: String(datos.id) } ] },
             { $set: { seccion: datos.seccion } }
@@ -157,7 +156,6 @@ async function main() {
         res.end(JSON.stringify({ error: err.message }));
       }
     }
-    // RUTA DE PEDIDOS CORREGIDA (Elimina el _id antes de actualizar)
     else if (pathname === '/pedidos' && req.method === 'POST') {
       let body = '';
       req.on('data', chunk => body += chunk);
@@ -165,7 +163,6 @@ async function main() {
         try {
           const pedido = JSON.parse(body);
          
-          // SOLUCCIÓN AL ERROR: Remover el _id para que MongoDB no rechace la actualización del objeto inmutable
           if (pedido._id) {
             delete pedido._id;
           }
@@ -203,13 +200,44 @@ async function main() {
         try {
           const data = JSON.parse(body);
          
-          // SOLUCIÓN AL ERROR: Remover el _id para que MongoDB no rechace la actualización del objeto inmutable al guardar personal/ajustes
           if (data._id) {
             delete data._id;
           }
 
           await db.collection('config').updateOne(
             { _id: 'ajustes_tienda' },
+            { $set: data },
+            { upsert: true }
+          );
+          res.writeHead(200, {'Content-Type': 'application/json'});
+          res.end(JSON.stringify({ ok: true }));
+        } catch(err) {
+          res.writeHead(500, {'Content-Type': 'application/json'});
+          res.end(JSON.stringify({ error: err.message }));
+        }
+      });
+    }
+    // NUEVAS RUTAS: GESTIÓN DE PERSONAL EN SU PROPIA COLECCIÓN DE MONGO DB
+    else if (pathname === '/personal' && req.method === 'GET') {
+      try {
+        let doc = await db.collection('personal').findOne({ _id: 'lista_personal' });
+        if (!doc) doc = { _id: 'lista_personal', lista: [] };
+        res.writeHead(200, {'Content-Type': 'application/json'});
+        res.end(JSON.stringify(doc));
+      } catch(err) {
+        res.writeHead(500, {'Content-Type': 'application/json'});
+        res.end(JSON.stringify({ error: err.message }));
+      }
+    }
+    else if (pathname === '/personal' && req.method === 'POST') {
+      let body = '';
+      req.on('data', chunk => body += chunk);
+      req.on('end', async() => {
+        try {
+          const data = JSON.parse(body);
+          if (data._id) delete data._id;
+          await db.collection('personal').updateOne(
+            { _id: 'lista_personal' },
             { $set: data },
             { upsert: true }
           );
