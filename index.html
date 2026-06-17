@@ -451,11 +451,18 @@
                         <h2>Comprar / Registrar Producto</h2>
                         <form id="form-producto">
                             <div class="form-group"><label>ID Unico</label><input type="number" id="prod-id" required></div>
-                            <div class="form-group"><label>Nombre</label><input type="text" id="prod-nombre"required></div>
+                            <div class="form-group"><label>Nombre</label><input type="text" id="prod-nombre" required></div>
                             <div class="form-group"><label>Precio de Venta ($)</label><input type="number" id="prod-precio" step="0.01" required></div>
                             <div class="form-group"><label>Costo de Compra ($)</label><input type="number" id="prod-costo" step="0.01" required></div>
-                            <div class="form-group"><label>Cantidad Inicial</label><input type="number" id="prod-cantidad" required></div>
-                            <button id="btnRegistrarProducto"type="submit">Registrar Stock</button>
+                            <div class="form-group"><label>Cantidad Inicial</label><input type="number" id="prod-cantidad" step="0.01" required></div>
+                            <div class="form-group">
+                                <label>Unidad de Medida (Opcional)</label>
+                                <select id="prod-medida">
+                                    <option value="unidad">Por Unidad / General</option>
+                                    <option value="metros">Por Metros</option>
+                                </select>
+                            </div>
+                            <button id="btnRegistrarProducto" type="submit">Registrar Stock</button>
                         </form>
                     </div>
                 </div>
@@ -519,6 +526,20 @@
                             <div class="form-group">
                                 <label>Seleccionar Producto</label>
                                 <select id="ped-producto" required></select>
+                            </div>
+                            <div class="form-group" style="display: flex; gap: 10px;">
+                                <div style="flex: 1;">
+                                    <label>Cantidad</label>
+                                    <input type="number" id="ped-cantidad" value="1" min="0.01" step="0.01" required style="width: 100%;">
+                                </div>
+                                <div style="flex: 1;">
+                                    <label>Medida</label>
+                                    <select id="ped-medida" style="width: 100%;">
+                                        <option value="unidad">Unidades</option>
+                                        <option value="m">Metros</option>
+                                        <option value="cm">Centímetros</option>
+                                    </select>
+                                </div>
                             </div>
                             <div class="form-group">
                                 <label>Operario</label>
@@ -623,7 +644,6 @@ class Tienda {
 
     async cargarDatos() {
         try {
-            // Cargar configuración de secciones y contraseñas
             const configRes = await fetch(API + '/config');
             if (configRes.ok) {
                 const configData = await configRes.json();
@@ -631,24 +651,20 @@ class Tienda {
                 if (configData.secciones) this.secciones = configData.secciones;
             }
 
-            // Cargar Personal (vendedores) desde su propia colección
             const personalRes = await fetch(API + '/personal');
             if (personalRes.ok) {
                 this.vendedores = await personalRes.json();
             }
 
-            // Cargar productos
             const res = await fetch(API + '/productos');
             if(res.ok) {
                 this.inventario = await res.json();
                 
-                // Cargar ventas
                 const ventasRes = await fetch(API + '/ventas');
                 if (ventasRes.ok) {
                     this.historialVentas = await ventasRes.json();                
                 }
                 
-                // Cargar pedidos
                 const pedidosRes = await fetch(API + '/pedidos');
                 if (pedidosRes.ok) {
                     const pedidosData = await pedidosRes.json();
@@ -724,9 +740,21 @@ class Tienda {
         nuevoNombre = nuevoNombre.trim();
         if (nuevoNombre && nuevoNombre !== nombreAnterior) {
             if (this.secciones.includes(nuevoNombre)) return alert("Ya existe una sección con ese nombre.");
+            
             this.secciones = this.secciones.map(s => s === nombreAnterior ? nuevoNombre : s);
             this.inventario.forEach(p => { if (p.seccion === nombreAnterior) p.seccion = nuevoNombre; });
             await this.guardarConfig();
+
+            try {
+                await fetch(API + '/productos/renombrar-seccion', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({ anterior: nombreAnterior, nuevo: nuevoNombre })
+                });
+            } catch(err) {
+                console.error("Error al actualizar productos tras editar sección:", err);
+            }
+
             this.actualizarInterfaz();
         }
     }
@@ -734,15 +762,27 @@ class Tienda {
     async eliminarSeccion(nombreSeccion) {
         if (nombreSeccion === "General") return alert("La sección 'General' no puede ser eliminada.");
         if (confirm(`¿Eliminar sección "${nombreSeccion}"?`)) {
+            
             this.inventario.forEach(p => { if (p.seccion === nombreSeccion) p.seccion = "General"; });
             this.secciones = this.secciones.filter(s => s !== nombreSeccion);
             await this.guardarConfig();
+            
+            try {
+                await fetch(API + '/productos/reset-seccion', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({ seccion: nombreSeccion })
+                });
+            } catch(err) {
+                console.error("Error al resetear productos en base de datos:", err);
+            }
+
             this.actualizarInterfaz();
         }
     }
 
     async moverProductoASeccion(idProducto, nuevaSeccion) {
-        let prod = this.inventario.find(p => p.ID == idProducto);
+        let prod = this.inventario.find(p => p.ID === Number(idProducto));
         if (prod) {
             prod.seccion = nuevaSeccion;
             this.actualizarInterfaz();
@@ -751,7 +791,7 @@ class Tienda {
                 await fetch(API + '/productos/seccion', {
                     method: 'POST',
                     headers: {'Content-Type': 'application/json'},
-                    body: JSON.stringify({ id: idProducto, seccion: nuevaSeccion })
+                    body: JSON.stringify({ id: Number(idProducto), seccion: nuevaSeccion })
                 });
             } catch(err) {
                 console.error("Error al guardar la sección en el servidor:", err);
@@ -821,14 +861,15 @@ class Tienda {
         }
     }
 
-    async comprarProducto(id, nombre, precio, costo, cantidad) {
+    async comprarProducto(id, nombre, precio, costo, cantidad, medida) {
         const producto = {
             ID: Number(id),
             Nombre: nombre,
             Precio: Number(precio),
             Costo: Number(costo),
             Stock: Number(cantidad),
-            seccion: "General"
+            seccion: "General",
+            medida: medida
         };
 
         try {
@@ -856,7 +897,7 @@ class Tienda {
             const res = await fetch(API + '/productos/sumar', {
                 method: 'POST',
                 headers: {'Content-Type': 'application/json'},
-                body: JSON.stringify({id: idProducto, cantidad: 1})
+                body: JSON.stringify({id: Number(idProducto), cantidad: 1})
             });
             if (!res.ok) return alert('Error al actualizar stock');
             await this.cargarDatos();
@@ -867,13 +908,23 @@ class Tienda {
     }
 
     async realizarVenta(idProducto) {
-        let producto = this.inventario.find(p => p.ID == idProducto);
+        let producto = this.inventario.find(p => p.ID === Number(idProducto));
         if (!producto) return alert("Producto no encontrado o error de identificación.");
 
         let stockActual = producto.Stock !== undefined ? producto.Stock : (producto.stock || 0);
         let precioActual = producto.Precio !== undefined ? producto.Precio : (producto.precio || 0);
 
-        if (stockActual < 1) return alert("Sin stock disponible para la venta de este producto.");
+        let cantInput = Number(document.getElementById(`cant-${producto.ID}`).value) || 1;
+        let unidadSelect = document.getElementById(`unidad-${producto.ID}`).value;
+
+        let cantidadAVender = cantInput;
+        if (unidadSelect === 'cm') {
+            cantidadAVender = cantInput / 100;
+        }
+
+        if (stockActual < cantidadAVender) return alert("Sin stock suficiente para esta venta.");
+
+        let subtotal = precioActual * cantidadAVender;
 
         let vendedorSeleccionado = document.getElementById('vendedor-global')?.value || "General";
         let metPago = document.getElementById('venta-metodo-pago')?.value || "qr";
@@ -881,13 +932,15 @@ class Tienda {
 
         if (metPago === 'efectivo') {
             desc = Number(document.getElementById('venta-descuento')?.value) || 0;
-            if (desc > precioActual) {
-                alert("El descuento no puede ser mayor al precio original del producto ($" + precioActual + ")");
+            if (desc > subtotal) {
+                alert("El descuento no puede ser mayor al precio de la venta ($" + subtotal.toFixed(2) + ")");
                 return;
             }
         }
 
-        let total = precioActual - desc;
+        let total = subtotal - desc;
+        let detalleMedida = unidadSelect === 'cm' ? `${cantInput}cm` : (unidadSelect === 'm' ? `${cantInput}m` : `${cantInput}u`);
+        let nombreVenta = `${producto.Nombre} (${detalleMedida})`;
 
         try {
             const res = await fetch(API + '/ventas', {
@@ -895,9 +948,9 @@ class Tienda {
                 headers: {'Content-Type': 'application/json'},
                 body: JSON.stringify({
                     productoID: producto.ID,
-                    nombre: producto.Nombre,
+                    nombre: nombreVenta,
                     totalVendido: total,
-                    cantidad: 1,
+                    cantidad: cantidadAVender,
                     vendedor: vendedorSeleccionado,
                     metodoPago: metPago,
                     descuento: desc
@@ -916,27 +969,56 @@ class Tienda {
         }
     }
 
-    eliminarProducto(idProducto) {
-        if(confirm("¿Eliminar producto del catálogo?")) {
-            alert('Función pendiente de vinculación al servidor.');
+    async eliminarProducto(idProducto) {
+        if(confirm("¿Estás seguro de que quieres eliminar este producto del catálogo permanentemente?")) {
+            try {
+                const res = await fetch(API + '/productos/eliminar', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({ id: Number(idProducto) })
+                });
+                
+                if (res.ok) {
+                    alert("Producto eliminado correctamente.");
+                    await this.cargarDatos();
+                } else {
+                    alert("Hubo un error en el servidor al intentar eliminar el producto.");
+                }
+            } catch(err) {
+                console.error(err);
+                alert("Error de red o conexión al intentar eliminar el producto.");
+            }
         }
     }
 
-    /* MÉTODOS DE LA GESTIÓN DE PEDIDOS PERMANENTES */
     async crearPedido(cliente, productoId, operario) {
-        let prod = this.inventario.find(p => p.ID == productoId);
+        let prod = this.inventario.find(p => p.ID === Number(productoId));
         if (!prod) return alert("Selecciona un producto válido.");
 
+        let cantInput = Number(document.getElementById('ped-cantidad').value) || 1;
+        let unidadSelect = document.getElementById('ped-medida').value;
+
+        let cantidadPedido = cantInput;
+        if (unidadSelect === 'cm') {
+            cantidadPedido = cantInput / 100;
+        }
+
         let precioActual = prod.Precio !== undefined ? prod.Precio : (prod.precio || 0);
+        let subtotal = precioActual * cantidadPedido;
+
+        let detalleMedida = unidadSelect === 'cm' ? `${cantInput}cm` : (unidadSelect === 'm' ? `${cantInput}m` : `${cantInput}u`);
+        let nombreVenta = `${prod.Nombre} (${detalleMedida})`;
+
         let nuevoId = this.pedidos.length > 0 ? Math.max(...this.pedidos.map(p => p.id)) + 1 : 1;
 
         const nuevoPedido = {
             id: nuevoId,
             cliente: cliente.trim(),
             productoId: prod.ID,
-            productoNombre: prod.Nombre,
-            montoOriginal: precioActual,
-            montoFinal: precioActual,
+            productoNombre: nombreVenta,
+            cantidadAsignada: cantidadPedido,
+            montoOriginal: subtotal,
+            montoFinal: subtotal,
             operario: operario,
             fechaPedido: new Date(),
             estado: 'Pendiente',
@@ -965,7 +1047,7 @@ class Tienda {
     }
 
     async entregarPedido(idPedido) {
-        let ped = this.pedidos.find(p => p.id == idPedido);
+        let ped = this.pedidos.find(p => p.id === Number(idPedido));
         if (!ped) return;
 
         const metPago = document.getElementById(`pay-method-${idPedido}`).value;
@@ -975,7 +1057,7 @@ class Tienda {
             const descInput = document.getElementById(`discount-${idPedido}`).value;
             desc = Number(descInput) || 0;
             if (desc > ped.montoOriginal) {
-                alert("El descuento no puede ser mayor al precio del producto ($" + ped.montoOriginal + ")");
+                alert("El descuento no puede ser mayor al precio del producto ($" + ped.montoOriginal.toFixed(2) + ")");
                 return;
             }
         }
@@ -985,6 +1067,8 @@ class Tienda {
         ped.descuento = desc;
         ped.montoFinal = Math.max(0, ped.montoOriginal - desc);
         ped.estado = 'Retirado';
+
+        let cant = ped.cantidadAsignada || 1;
 
         try {
             await fetch(API + '/pedidos', {
@@ -1000,7 +1084,7 @@ class Tienda {
                     productoID: ped.productoId,
                     nombre: `${ped.productoNombre} (Pedido de ${ped.cliente})`,
                     totalVendido: ped.montoFinal,
-                    cantidad: 1,
+                    cantidad: cant,
                     vendedor: ped.operario,
                     metodoPago: metPago,
                     descuento: desc
@@ -1066,20 +1150,34 @@ class Tienda {
             const precioActual = prod.Precio !== undefined ? prod.Precio : (prod.precio || 0);
             
             const sinStock = stockActual <= 0;
-            let txtStock = sinStock ? "SIN STOCK" : (stockActual <= 3 ? `Stock: ${stockActual} u. (Poco)` : `Stock: ${stockActual} u.`);
+            let txtStock = sinStock ? "SIN STOCK" : (stockActual <= 3 ? `Stock: ${stockActual} (Poco)` : `Stock: ${stockActual}`);
 
-            let btnEliminar = this.adminDesbloqueado ? `<button class="btn-eliminar-prod" onclick="miTienda.eliminarProducto('${prod.ID}')">Eliminar Producto</button>` : '';
+            const medida = prod.Medida || prod.medida || 'unidad';
+            let opcionesMedida = `<option value="unidad">Unidades</option>`;
+            let txtPrecioUnidad = "";
+            if (medida === 'metros') {
+                opcionesMedida = `<option value="m">Metros</option><option value="cm">Centímetros</option>`;
+                txtPrecioUnidad = " x metro";
+            }
+
+            let btnEliminar = this.adminDesbloqueado ? `<button class="btn-eliminar-prod" onclick="miTienda.eliminarProducto(${prod.ID})">Eliminar Producto</button>` : '';
 
             contProd.innerHTML += `
                 <div class="card">
                     <div class="card-header"><h3>ID: ${prod.ID} | ${prod.Nombre}</h3></div>
                     <div>
-                        <p class="precio">$${precioActual.toFixed(2)}</p>
+                        <p class="precio">$${precioActual.toFixed(2)}${txtPrecioUnidad}</p>
                         <p class="stock ${stockActual <= 3 ? 'alerta' : ''}">${txtStock}</p>
                     </div>
+                    <div style="display:flex; gap:5px; margin-bottom:10px; align-items: center;">
+                        <input type="number" id="cant-${prod.ID}" value="1" min="0.01" step="0.01" style="width:70px; padding:4px; border:1px solid #ccc; border-radius:4px;">
+                        <select id="unidad-${prod.ID}" style="padding:4px; border:1px solid #ccc; border-radius:4px; flex-grow:1;">
+                            ${opcionesMedida}
+                        </select>
+                    </div>
                     <div class="card-buttons">
-                        <button class="btn-venta" onclick="miTienda.realizarVenta('${prod.ID}')" ${sinStock ? 'disabled style="background-color:#ccc;"' : ''}>Vender 1</button>
-                        <button class="btn-reponer" onclick="miTienda.sumarUnidadStock('${prod.ID}')">+1</button>
+                        <button class="btn-venta" onclick="miTienda.realizarVenta(${prod.ID})" ${sinStock ? 'disabled style="background-color:#ccc;"' : ''}>Vender</button>
+                        <button class="btn-reponer" onclick="miTienda.sumarUnidadStock(${prod.ID})">+1</button>
                     </div>
                     ${btnEliminar}
                 </div>`;
@@ -1117,7 +1215,7 @@ class Tienda {
                                 <div id="div-desc-${p.id}" style="display:none; margin-left:5px;">
                                     <input type="number" id="discount-${p.id}" placeholder="Descuento $" style="width:90px; padding:4px; font-size:13px;">
                                 </div>
-                                <button onclick="miTienda.entregarPedido('${p.id}')" style="width:auto; padding:5px 12px; font-size:13px; background-color:#2ecc71; display:block;">Retirar</button>
+                                <button onclick="miTienda.entregarPedido(${p.id})" style="width:auto; padding:5px 12px; font-size:13px; background-color:#2ecc71; display:block;">Retirar</button>
                             </td>
                         </tr>`;
                 } else {
@@ -1154,10 +1252,10 @@ class Tienda {
 
                     return `
                         <div class="producto-fila-seccion">
-                            <span><strong>ID: ${p.ID}</strong> - ${p.Nombre} (Stock: ${stock} u.)</span>
+                            <span><strong>ID: ${p.ID}</strong> - ${p.Nombre} (Stock: ${stock})</span>
                             <div>
                                 <label style="display:inline; font-size:12px; margin-right:5px;">Mover a:</label>
-                                <select class="select-mover" onchange="miTienda.moverProductoASeccion('${p.ID}', this.value)">
+                                <select class="select-mover" onchange="miTienda.moverProductoASeccion(${p.ID}, this.value)">
                                     ${opcionesSelect}
                                 </select>
                             </div>
@@ -1375,11 +1473,12 @@ const miTienda = new Tienda();
 document.getElementById('form-producto').addEventListener('submit', function(e) {
     e.preventDefault();
     miTienda.comprarProducto(
-        document.getElementById('prod-id').value,
+        Number(document.getElementById('prod-id').value),
         document.getElementById('prod-nombre').value,
-        document.getElementById('prod-precio').value,
-        document.getElementById('prod-costo').value,
-        document.getElementById('prod-cantidad').value
+        Number(document.getElementById('prod-precio').value),
+        Number(document.getElementById('prod-costo').value),
+        Number(document.getElementById('prod-cantidad').value),
+        document.getElementById('prod-medida').value
     );
     this.reset();
 });
