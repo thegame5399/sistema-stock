@@ -865,9 +865,9 @@ class Tienda {
         const producto = {
             ID: Number(id),
             Nombre: nombre,
-            Precio: Number(precio),
-            Costo: Number(costo),
-            Stock: Number(cantidad),
+            Precio: parseFloat(Number(precio).toFixed(2)),
+            Costo: parseFloat(Number(costo).toFixed(2)),
+            Stock: parseFloat(Number(cantidad).toFixed(2)),
             seccion: "General",
             medida: medida
         };
@@ -921,10 +921,11 @@ class Tienda {
         if (unidadSelect === 'cm') {
             cantidadAVender = cantInput / 100;
         }
+        cantidadAVender = parseFloat(cantidadAVender.toFixed(2));
 
         if (stockActual < cantidadAVender) return alert("Sin stock suficiente para esta venta.");
 
-        let subtotal = precioActual * cantidadAVender;
+        let subtotal = parseFloat((precioActual * cantidadAVender).toFixed(2));
 
         let vendedorSeleccionado = document.getElementById('vendedor-global')?.value || "General";
         let metPago = document.getElementById('venta-metodo-pago')?.value || "qr";
@@ -938,7 +939,7 @@ class Tienda {
             }
         }
 
-        let total = subtotal - desc;
+        let total = parseFloat((subtotal - desc).toFixed(2));
         let detalleMedida = unidadSelect === 'cm' ? `${cantInput}cm` : (unidadSelect === 'm' ? `${cantInput}m` : `${cantInput}u`);
         let nombreVenta = `${producto.Nombre} (${detalleMedida})`;
 
@@ -1002,9 +1003,10 @@ class Tienda {
         if (unidadSelect === 'cm') {
             cantidadPedido = cantInput / 100;
         }
+        cantidadPedido = parseFloat(cantidadPedido.toFixed(2));
 
         let precioActual = prod.Precio !== undefined ? prod.Precio : (prod.precio || 0);
-        let subtotal = precioActual * cantidadPedido;
+        let subtotal = parseFloat((precioActual * cantidadPedido).toFixed(2));
 
         let detalleMedida = unidadSelect === 'cm' ? `${cantInput}cm` : (unidadSelect === 'm' ? `${cantInput}m` : `${cantInput}u`);
         let nombreVenta = `${prod.Nombre} (${detalleMedida})`;
@@ -1065,7 +1067,7 @@ class Tienda {
         ped.fechaRetiro = new Date();
         ped.metodoPago = metPago;
         ped.descuento = desc;
-        ped.montoFinal = Math.max(0, ped.montoOriginal - desc);
+        ped.montoFinal = parseFloat(Math.max(0, ped.montoOriginal - desc).toFixed(2));
         ped.estado = 'Retirado';
 
         let cant = ped.cantidadAsignada || 1;
@@ -1084,7 +1086,7 @@ class Tienda {
                     productoID: ped.productoId,
                     nombre: `${ped.productoNombre} (Pedido de ${ped.cliente})`,
                     totalVendido: ped.montoFinal,
-                    cantidad: cant,
+                    cantidad: parseFloat(Number(cant).toFixed(2)),
                     vendedor: ped.operario,
                     metodoPago: metPago,
                     descuento: desc
@@ -1150,7 +1152,7 @@ class Tienda {
             const precioActual = prod.Precio !== undefined ? prod.Precio : (prod.precio || 0);
             
             const sinStock = stockActual <= 0;
-            let txtStock = sinStock ? "SIN STOCK" : (stockActual <= 3 ? `Stock: ${stockActual} (Poco)` : `Stock: ${stockActual}`);
+            let txtStock = sinStock ? "SIN STOCK" : (stockActual <= 3 ? `Stock: ${parseFloat(stockActual.toFixed(2))} (Poco)` : `Stock: ${parseFloat(stockActual.toFixed(2))}`);
 
             const medida = prod.Medida || prod.medida || 'unidad';
             let opcionesMedida = `<option value="unidad">Unidades</option>`;
@@ -1189,7 +1191,7 @@ class Tienda {
             let fechaVenta = new Date(v.fecha);
             let fechaFormateada = fechaVenta.toLocaleDateString() + ' - ' + fechaVenta.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
             let tVendido = v.totalVendido || 0;
-            contVentas.innerHTML += `<tr><td>#${v._id ? v._id.slice(-4) : Math.floor(Math.random()*1000)}</td><td>${v.nombre}</td><td>${v.cantidad}</td><td>$${tVendido.toFixed(2)}</td><td><strong>${v.vendedor || 'General'}</strong></td><td><small>${fechaFormateada}</small></td></tr>`;
+            contVentas.innerHTML += `<tr><td>#${v._id ? v._id.slice(-4) : Math.floor(Math.random()*1000)}</td><td>${v.nombre}</td><td>${parseFloat(Number(v.cantidad).toFixed(2))}</td><td>$${tVendido.toFixed(2)}</td><td><strong>${v.vendedor || 'General'}</strong></td><td><small>${fechaFormateada}</small></td></tr>`;
         });
 
         const contPedidos = document.getElementById('lista-pedidos-cuerpo');
@@ -1252,7 +1254,7 @@ class Tienda {
 
                     return `
                         <div class="producto-fila-seccion">
-                            <span><strong>ID: ${p.ID}</strong> - ${p.Nombre} (Stock: ${stock})</span>
+                            <span><strong>ID: ${p.ID}</strong> - ${p.Nombre} (Stock: ${parseFloat(stock.toFixed(2))})</span>
                             <div>
                                 <label style="display:inline; font-size:12px; margin-right:5px;">Mover a:</label>
                                 <select class="select-mover" onchange="miTienda.moverProductoASeccion(${p.ID}, this.value)">
@@ -1318,8 +1320,8 @@ class Tienda {
         }
         let balance = totalVendido - totalInvertido;
 
-        let filasCompras = datosMes.compras.map(c => `<tr><td>${c.nombre}</td><td>${c.cantidad}</td><td>$${(c.totalInvertido||0).toFixed(2)}</td></tr>`).join('');
-        let filasVentas = datosMes.ventas.map(v => `<tr><td>${v.nombre}</td><td>${v.vendedor || 'General'}</td><td>${v.cantidad}</td><td>$${(v.totalVendido||0).toFixed(2)}</td></tr>`).join('');
+        let filasCompras = datosMes.compras.map(c => `<tr><td>${c.nombre}</td><td>${parseFloat(Number(c.cantidad).toFixed(2))}</td><td>$${(c.totalInvertido||0).toFixed(2)}</td></tr>`).join('');
+        let filasVentas = datosMes.ventas.map(v => `<tr><td>${v.nombre}</td><td>${v.vendedor || 'General'}</td><td>${parseFloat(Number(v.cantidad).toFixed(2))}</td><td>$${(v.totalVendido||0).toFixed(2)}</td></tr>`).join('');
 
         let controlesAdminMes = '';
         let formularioManual = '';
@@ -1336,7 +1338,7 @@ class Tienda {
                     <div>
                         <h4>Agregar Compra Manual</h4>
                         <input type="text" id="manual-compra-nombre" placeholder="Producto">
-                        <input type="number" id="manual-compra-cantidad" placeholder="Cantidad">
+                        <input type="number" id="manual-compra-cantidad" placeholder="Cantidad" step="0.01">
                         <input type="number" id="manual-compra-total" step="0.01" placeholder="Costo Total">
                         <button type="button" onclick="miTienda.agregarCompraManual('${claveAgrupacion}')">Guardar</button>
                     </div>
@@ -1344,7 +1346,7 @@ class Tienda {
                         <h4>Agregar Venta Manual</h4>
                         <input type="text" id="manual-venta-nombre" placeholder="Producto">
                         <input type="text" id="manual-venta-vendedor" value="General">
-                        <input type="number" id="manual-venta-cantidad" placeholder="Cantidad">
+                        <input type="number" id="manual-venta-cantidad" placeholder="Cantidad" step="0.01">
                         <input type="number" id="manual-venta-total" step="0.01" placeholder="Total">
                         <button type="button" onclick="miTienda.agregarVentaManual('${claveAgrupacion}')">Guardar</button>
                     </div>
@@ -1426,9 +1428,9 @@ class Tienda {
 
     agregarCompraManual(claveMes) {
         const nombre = document.getElementById('manual-compra-nombre').value.trim();
-        const cantidad = Number(document.getElementById('manual-compra-cantidad').value);
-        const total = Number(document.getElementById('manual-compra-total').value);
-        if (!nombre || cantidad <= 0 || total < 0) return alert("Complete todos los campos");
+        const cantidad = parseFloat(Number(document.getElementById('manual-compra-cantidad').value).toFixed(2));
+        const total = parseFloat(Number(document.getElementById('manual-compra-total').value).toFixed(2));
+        if (!nombre || cantidad <= 0 || total < 0) return alert("Complete todos los campos de forma correcta");
         let partes = claveMes.split(" de ");
         let mesIndex = this.listaNombresMeses.indexOf(partes[0]);
         let fechaFicticia = new Date(Number(partes[1]), mesIndex, 15);
@@ -1439,9 +1441,9 @@ class Tienda {
     agregarVentaManual(claveMes) {
         const nombre = document.getElementById('manual-venta-nombre').value.trim();
         const vended = document.getElementById('manual-venta-vendedor').value.trim() || "General";
-        const cantidad = Number(document.getElementById('manual-venta-cantidad').value);
-        const total = Number(document.getElementById('manual-venta-total').value);
-        if (!nombre || cantidad <= 0 || total < 0) return alert("Complete todos los campos");
+        const cantidad = parseFloat(Number(document.getElementById('manual-venta-cantidad').value).toFixed(2));
+        const total = parseFloat(Number(document.getElementById('manual-venta-total').value).toFixed(2));
+        if (!nombre || cantidad <= 0 || total < 0) return alert("Complete todos los campos de forma correcta");
         let partes = claveMes.split(" de ");
         let mesIndex = this.listaNombresMeses.indexOf(partes[0]);
         let fechaFicticia = new Date(Number(partes[1]), mesIndex, 15);
